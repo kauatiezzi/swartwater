@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>SmartWater — Painel Cidade</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./styles.css">
+  <style>
+    /* ── Cidade: layout desktop-first, tela cheia ── */
+    html, body { height: 100%; overflow: hidden; background: #0a1628; }
+    body { display: flex; flex-direction: column; align-items: stretch; padding: 0; }
+
+    .cidade-shell {
+      flex: 1; display: flex; flex-direction: column;
+      background: linear-gradient(160deg, #0a1628 0%, #03045E 100%);
+      color: #fff; overflow: hidden;
+    }
+
+    /* Header */
+    .cidade-header {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 16px 32px; border-bottom: 1px solid rgba(255,255,255,.08);
+      flex-shrink: 0;
+    }
+    .cidade-logo { display: flex; align-items: center; gap: 12px; }
+    .cidade-title { font-family: var(--font); font-size: 20px; font-weight: 800; color: #fff; letter-spacing: -0.5px; }
+    .cidade-title span { color: var(--a2); }
+    .cidade-subtitle { font-size: 11px; color: rgba(255,255,255,.45); margin-top: 2px; }
+    .cidade-header-right { display: flex; align-items: center; gap: 14px; }
+    .cidade-live-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--ok); animation: pulse-dot 1.5s infinite; }
+    .cidade-live-label { font-size: 11px; color: rgba(255,255,255,.5); }
+    .cidade-link-cond {
+      display: inline-flex; align-items: center; gap: 6px;
+      background: rgba(255,255,255,.1); border: 1px solid rgba(255,255,255,.15);
+      color: #fff; font-size: 12px; font-weight: 600; padding: 7px 16px;
+      border-radius: 20px; cursor: pointer; text-decoration: none;
+      font-family: var(--body); transition: background .15s;
+    }
+    .cidade-link-cond:hover { background: rgba(255,255,255,.18); }
+
+    /* Body */
+    .cidade-body { flex: 1; display: flex; overflow: hidden; }
+
+    /* Sidebar grupos */
+    .cidade-sidebar {
+      width: 220px; flex-shrink: 0; padding: 20px 16px;
+      border-right: 1px solid rgba(255,255,255,.06);
+      overflow-y: auto; display: flex; flex-direction: column; gap: 8px;
+    }
+    .grupo-card {
+      border-radius: 14px; padding: 14px; cursor: pointer;
+      border: 1.5px solid transparent; transition: all .15s;
+      background: rgba(255,255,255,.05);
+    }
+    .grupo-card:hover { background: rgba(255,255,255,.09); }
+    .grupo-card.active { border-color: var(--a2); background: rgba(0,180,216,.12); }
+    .grupo-card-header { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; }
+    .grupo-icone { font-size: 20px; }
+    .grupo-nome { font-family: var(--font); font-size: 13px; font-weight: 800; color: #fff; }
+    .grupo-tema { font-size: 10px; color: rgba(255,255,255,.45); margin-top: 2px; }
+    .grupo-status-row { display: flex; align-items: center; gap: 6px; margin-top: 8px; }
+    .grupo-status-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+    .grupo-status-dot.normal  { background: var(--ok); }
+    .grupo-status-dot.atencao { background: var(--warn); }
+    .grupo-status-dot.critico { background: var(--err); animation: pulse-dot 1s infinite; }
+    .grupo-status-label { font-size: 10px; color: rgba(255,255,255,.5); }
+
+    /* Main content */
+    .cidade-main { flex: 1; overflow-y: auto; padding: 20px 24px; display: flex; flex-direction: column; gap: 16px; }
+    .cidade-main::-webkit-scrollbar { width: 4px; }
+    .cidade-main::-webkit-scrollbar-thumb { background: rgba(255,255,255,.15); border-radius: 2px; }
+
+    /* Resumo topo */
+    .cidade-resumo {
+      display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px;
+    }
+    .resumo-card {
+      background: rgba(255,255,255,.06); border-radius: 16px; padding: 16px;
+      border: 1px solid rgba(255,255,255,.08);
+    }
+    .resumo-label { font-size: 10px; font-weight: 700; color: rgba(255,255,255,.4); text-transform: uppercase; letter-spacing: .06em; margin-bottom: 6px; }
+    .resumo-valor { font-family: var(--font); font-size: 30px; font-weight: 800; color: #fff; letter-spacing: -1px; }
+    .resumo-valor.critico { color: var(--err); }
+    .resumo-valor.atencao { color: var(--warn); }
+    .resumo-valor.ok      { color: var(--ok); }
+    .resumo-sub { font-size: 11px; color: rgba(255,255,255,.35); margin-top: 4px; }
+
+    /* Grid de zonas */
+    .zonas-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+    .zona-card-cidade {
+      background: rgba(255,255,255,.05); border-radius: 18px; padding: 18px;
+      border: 1.5px solid rgba(255,255,255,.07); transition: border-color .2s;
+      cursor: pointer; position: relative; overflow: hidden;
+    }
+    .zona-card-cidade::before {
+      content: ''; position: absolute; top: -30px; right: -30px;
+      width: 80px; height: 80px; border-radius: 50%;
+      background: currentColor; opacity: .04;
+    }
+    .zona-card-cidade:hover { border-color: rgba(0,180,216,.4); }
+    .zona-card-cidade.critico { border-color: rgba(239,35,60,.5); background: rgba(239,35,60,.07); }
+    .zona-card-cidade.atencao { border-color: rgba(255,183,3,.4); background: rgba(255,183,3,.06); }
+    .zona-card-cidade.normal  { border-color: rgba(6,214,160,.3); }
+
+    .zona-card-top { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 12px; }
+    .zona-card-nome { font-family: var(--font); font-size: 14px; font-weight: 800; color: #fff; }
+    .zona-card-tipo { font-size: 10px; color: rgba(255,255,255,.4); margin-top: 2px; text-transform: capitalize; }
+    .zona-status-chip {
+      font-size: 10px; font-weight: 700; padding: 3px 10px; border-radius: 20px;
+    }
+    .zona-status-chip.critico { background: var(--err); color: #fff; }
+    .zona-status-chip.atencao { background: var(--warn); color: #fff; }
+    .zona-status-chip.normal  { background: var(--ok);  color: #fff; }
+
+    .zona-metrics { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 8px; }
+    .zona-metric { background: rgba(255,255,255,.06); border-radius: 10px; padding: 8px 10px; }
+    .zona-metric-label { font-size: 9px; color: rgba(255,255,255,.35); font-weight: 600; text-transform: uppercase; letter-spacing: .04em; }
+    .zona-metric-valor { font-family: var(--font); font-size: 16px; font-weight: 800; color: #fff; margin-top: 2px; }
+    .zona-metric-unidade { font-size: 10px; opacity: .6; }
+
+    .zona-grupo-badge {
+      display: inline-flex; align-items: center; gap: 4px; margin-top: 10px;
+      font-size: 10px; font-weight: 600; color: rgba(255,255,255,.5);
+      background: rgba(255,255,255,.06); padding: 3px 9px; border-radius: 20px;
+    }
+
+    /* Alertas sidebar */
+    .cidade-alertas {
+      width: 260px; flex-shrink: 0; padding: 20px 16px;
+      border-left: 1px solid rgba(255,255,255,.06);
+      overflow-y: auto; display: flex; flex-direction: column; gap: 0;
+    }
+    .alertas-title { font-family: var(--font); font-size: 13px; font-weight: 800; color: #fff; margin-bottom: 12px; }
+    .alerta-item {
+      padding: 12px; border-radius: 12px; margin-bottom: 8px;
+      border-left: 3px solid transparent;
+    }
+    .alerta-item.critico { background: rgba(239,35,60,.1); border-left-color: var(--err); }
+    .alerta-item.atencao { background: rgba(255,183,3,.08); border-left-color: var(--warn); }
+    .alerta-item.normal  { background: rgba(6,214,160,.08); border-left-color: var(--ok); }
+    .alerta-item-titulo { font-size: 11px; font-weight: 700; color: #fff; line-height: 1.4; }
+    .alerta-item-sub { font-size: 10px; color: rgba(255,255,255,.4); margin-top: 3px; }
+    .alerta-empty { font-size: 12px; color: rgba(255,255,255,.3); text-align: center; padding: 24px 0; }
+
+    /* Histórico mini-chart dentro do card */
+    .zona-mini-chart { margin-top: 10px; }
+    .mini-bars { display: flex; gap: 2px; align-items: flex-end; height: 28px; }
+    .mini-bar { flex: 1; border-radius: 2px 2px 0 0; min-height: 2px; opacity: .7; }
+
+    /* Link para app.html */
+    .btn-cond {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: rgba(255,255,255,.08); border: 1.5px solid rgba(255,255,255,.15);
+      color: #fff; font-size: 13px; font-weight: 700; padding: 12px 20px;
+      border-radius: 14px; cursor: pointer; text-decoration: none;
+      font-family: var(--font); transition: background .15s; width: 100%;
+      justify-content: center; margin-top: 8px;
+    }
+    .btn-cond:hover { background: rgba(255,255,255,.15); }
+
+    /* Responsivo mobile */
+    @media (max-width: 767px) {
+      html, body { overflow: auto; }
+      .cidade-body { flex-direction: column; }
+      .cidade-sidebar { width: 100%; border-right: none; border-bottom: 1px solid rgba(255,255,255,.06); flex-direction: row; overflow-x: auto; padding: 12px; }
+      .grupo-card { min-width: 140px; }
+      .cidade-alertas { width: 100%; border-left: none; border-top: 1px solid rgba(255,255,255,.06); }
+      .zonas-grid { grid-template-columns: 1fr; }
+      .cidade-resumo { grid-template-columns: 1fr 1fr; }
+    }
+    @media (min-width: 768px) and (max-width: 1199px) {
+      .zonas-grid { grid-template-columns: 1fr 1fr; }
+      .cidade-alertas { width: 220px; }
+    }
+  </style>
+</head>
+<body>
+<div class="cidade-shell">
+
+  <!-- HEADER -->
+  <div class="cidade-header">
+    <div class="cidade-logo">
+      <svg width="32" height="36" viewBox="0 0 160 180" fill="none">
+        <defs>
+          <linearGradient id="cg1" x1="40" y1="10" x2="130" y2="170" gradientUnits="userSpaceOnUse">
+            <stop offset="0%" stop-color="#48CAE4"/><stop offset="100%" stop-color="#023E8A"/>
+          </linearGradient>
+        </defs>
+        <path d="M80 8C80 8 22 72 22 112C22 145 48 168 80 168C112 168 138 145 138 112C138 72 80 8 80 8Z" fill="url(#cg1)"/>
+        <line x1="80" y1="140" x2="80" y2="100" stroke="white" stroke-width="8" stroke-linecap="round"/>
+        <line x1="80" y1="118" x2="58" y2="118" stroke="white" stroke-width="8" stroke-linecap="round"/>
+        <line x1="58" y1="118" x2="58" y2="96" stroke="white" stroke-width="8" stroke-linecap="round"/>
+        <line x1="80" y1="110" x2="102" y2="110" stroke="white" stroke-width="8" stroke-linecap="round"/>
+        <line x1="102" y1="110" x2="102" y2="90" stroke="white" stroke-width="8" stroke-linecap="round"/>
+        <circle cx="58" cy="94" r="10" fill="white"/><circle cx="102" cy="88" r="10" fill="white"/><circle cx="80" cy="80" r="10" fill="white"/>
+      </svg>
+      <div>
+        <div class="cidade-title">Smart<span>Water</span></div>
+        <div class="cidade-subtitle">Monitoramento da Rede DAAE — Araraquara</div>
+      </div>
+    </div>
+    <div class="cidade-header-right">
+      <div class="cidade-live-dot"></div>
+      <span class="cidade-live-label">Dados em tempo real</span>
+      <a href="./app.html" class="cidade-link-cond">🏢 Painel Condomínio →</a>
+    </div>
+  </div>
+
+  <div class="cidade-body">
+
+    <!-- SIDEBAR: Grupos -->
+    <div class="cidade-sidebar">
+      <div style="font-size:10px;font-weight:700;color:rgba(255,255,255,.3);text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px">Grupos</div>
+      <div id="grupos-list">
+        <div style="color:rgba(255,255,255,.3);font-size:12px;padding:12px">Carregando...</div>
+      </div>
+      <div style="margin-top:auto">
+        <div style="height:1px;background:rgba(255,255,255,.06);margin:12px 0"></div>
+        <div style="font-size:10px;color:rgba(255,255,255,.25);text-align:center;line-height:1.6">
+          SmartWater v2.0<br>Plataforma de Monitoramento
+        </div>
+        <a href="./app.html" class="btn-cond">🏢 Painel Condomínio</a>
+      </div>
+    </div>
+
+    <!-- MAIN: Dashboard -->
+    <div class="cidade-main" id="cidade-main">
+      <!-- Resumo -->
+      <div class="cidade-resumo" id="resumo-cards">
+        <div class="resumo-card"><div class="resumo-label">Carregando...</div></div>
+      </div>
+
+      <!-- Grid de zonas -->
+      <div>
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+          <div style="font-family:var(--font);font-size:15px;font-weight:800;color:#fff">Zonas da Rede</div>
+          <div id="filtro-grupo" style="display:flex;gap:6px"></div>
+        </div>
+        <div class="zonas-grid" id="zonas-grid">
+          <div style="color:rgba(255,255,255,.3);font-size:13px;padding:20px">Carregando zonas...</div>
+        </div>
+      </div>
+
+      <!-- Tabela sensores -->
+      <div style="background:rgba(255,255,255,.04);border-radius:18px;padding:18px;border:1px solid rgba(255,255,255,.07)">
+        <div style="font-family:var(--font);font-size:14px;font-weight:800;color:#fff;margin-bottom:14px">⚙️ Sensores da Rede</div>
+        <div id="sensores-table"><div style="color:rgba(255,255,255,.3);font-size:12px">Carregando...</div></div>
+      </div>
+
+      <!-- Integração: como conectar ao sistema -->
+      <div style="background:rgba(0,180,216,.07);border-radius:18px;padding:18px;border:1px solid rgba(0,180,216,.2)">
+        <div style="font-family:var(--font);font-size:14px;font-weight:800;color:var(--a2);margin-bottom:12px">🔌 Integração com os grupos</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px">
+          <div style="background:rgba(255,255,255,.06);border-radius:10px;padding:10px">
+            <div style="font-size:10px;color:rgba(255,255,255,.4);margin-bottom:4px">💧 GRUPO 1 — Vazão</div>
+            <div style="font-family:monospace;font-size:11px;color:#90E0EF">"tipo": "vazao_entrada"<br>"tipo": "vazao_saida"</div>
+          </div>
+          <div style="background:rgba(255,255,255,.06);border-radius:10px;padding:10px">
+            <div style="font-size:10px;color:rgba(255,255,255,.4);margin-bottom:4px">📊 GRUPO 2 — Pressão</div>
+            <div style="font-family:monospace;font-size:11px;color:#90E0EF">"tipo": "pressao"<br>"valor": 28500 (mmH2O)</div>
+          </div>
+        </div>
+        <div style="background:rgba(0,0,0,.3);border-radius:10px;padding:12px;font-family:monospace;font-size:12px;color:#90E0EF;line-height:1.8">
+          <span style="color:rgba(255,255,255,.4)">// Grupo 3 (hardware) envia via Wi-Fi (Grupo 4):</span><br>
+          POST /api/cidade/leitura<br>
+          {<br>
+          &nbsp;&nbsp;"zona_id": 1,<br>
+          &nbsp;&nbsp;"tipo": "pressao" | "vazao_entrada" | "vazao_saida",<br>
+          &nbsp;&nbsp;"valor": 28500,<br>
+          &nbsp;&nbsp;"grupo": 1<br>
+          }
+        </div>
+        <div style="font-size:11px;color:rgba(255,255,255,.4);margin-top:10px">
+          Zonas: 1=Captação Anhumas · 2=Poço das Cruzes · 3=Reservatório · 4=Vila Harmonia · 5=Centro · 6=Vila Sedenho
+        </div>
+      </div>
+    </div>
+
+    <!-- SIDEBAR DIREITA: Alertas -->
+    <div class="cidade-alertas">
+      <div class="alertas-title">🚨 Alertas Ativos</div>
+      <div id="alertas-list"><div class="alerta-empty">Carregando...</div></div>
+      <div style="margin-top:16px">
+        <div style="font-size:10px;font-weight:700;color:rgba(255,255,255,.3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px">Limites da rede</div>
+        <div style="font-size:11px;color:rgba(255,255,255,.4);line-height:1.8">
+          ✅ Normal ≥ 20.000 mmH2O<br>
+          ⚠️ Atenção 15–20k mmH2O<br>
+          🚨 Crítico &lt; 15.000 mmH2O<br>
+          <br>
+          📊 Perda ≤ 5%: normal<br>
+          ⚠️ Perda 5–10%: atenção<br>
+          🚨 Perda &gt; 10%: vazamento
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /cidade-body -->
+</div><!-- /cidade-shell -->
+
+<script>
+const BASE_URL = '/api';
+let grupoFiltro = 'todos';
+let _dadosDash = null;
+
+async function apiFetch(path) {
+  try {
+    const r = await fetch(BASE_URL + path);
+    return await r.json().catch(()=>({}));
+  } catch(e) { return null; }
+}
+
+async function carregarDashboard() {
+  const [dash, alertas, sensores] = await Promise.all([
+    apiFetch('/cidade/dashboard'),
+    apiFetch('/cidade/alertas'),
+    apiFetch('/cidade/sensores'),
+  ]);
+
+  _dadosDash = dash;
+  if (dash) {
+    renderResumo(dash.resumo);
+    renderGrupos(dash.grupos, dash.zonas);
+    renderZonas(dash.zonas);
+  }
+  if (alertas) renderAlertas(alertas.alertas || []);
+  if (sensores) renderSensores(sensores);
+}
+
+function renderResumo(r) {
+  if (!r) return;
+  const corAlertas = r.zonas_criticas > 0 ? 'critico' : r.zonas_atencao > 0 ? 'atencao' : 'ok';
+  document.getElementById('resumo-cards').innerHTML = `
+    <div class="resumo-card">
+      <div class="resumo-label">Zonas monitoradas</div>
+      <div class="resumo-valor">${r.total_zonas}</div>
+      <div class="resumo-sub">na rede DAAE</div>
+    </div>
+    <div class="resumo-card">
+      <div class="resumo-label">Alertas ativos</div>
+      <div class="resumo-valor ${corAlertas}">${r.alertas_ativos}</div>
+      <div class="resumo-sub">${r.zonas_criticas} críticos · ${r.zonas_atencao} atenção</div>
+    </div>
+    <div class="resumo-card">
+      <div class="resumo-label">Perda total</div>
+      <div class="resumo-valor ${r.perda_total_pct > 10 ? 'critico' : r.perda_total_pct > 5 ? 'atencao' : 'ok'}">${r.perda_total_pct}%</div>
+      <div class="resumo-sub">entrada ${r.vazao_total_entrada_ls} vs saída ${r.vazao_total_saida_ls} L/s</div>
+    </div>
+    <div class="resumo-card">
+      <div class="resumo-label">Status geral</div>
+      <div class="resumo-valor ${corAlertas === 'ok' ? 'ok' : corAlertas}">${r.zonas_criticas > 0 ? '⚠️ Crítico' : r.zonas_atencao > 0 ? '↓ Atenção' : '✓ Normal'}</div>
+      <div class="resumo-sub">última atualização: agora</div>
+    </div>`;
+}
+
+function renderGrupos(grupos, zonas) {
+  if (!grupos) return;
+  const statusPorGrupo = {};
+  (zonas||[]).forEach(z => {
+    const g = z.grupo?.nome || 'Grupo 1';
+    if (!statusPorGrupo[g] || z.status_geral === 'critico') statusPorGrupo[g] = z.status_geral;
+  });
+
+  document.getElementById('grupos-list').innerHTML = grupos.map(g => `
+    <div class="grupo-card ${grupoFiltro === g.nome ? 'active' : ''}" onclick="filtrarGrupo('${g.nome}')">
+      <div class="grupo-card-header">
+        <span class="grupo-icone">${g.icone}</span>
+        <div>
+          <div class="grupo-nome">${g.nome}</div>
+          <div class="grupo-tema">${g.tema}</div>
+        </div>
+      </div>
+      <div class="grupo-status-row">
+        <div class="grupo-status-dot ${statusPorGrupo[g.nome] || 'normal'}"></div>
+        <span class="grupo-status-label">${(statusPorGrupo[g.nome] || 'normal').charAt(0).toUpperCase() + (statusPorGrupo[g.nome]||'normal').slice(1)}</span>
+      </div>
+    </div>`).join('') + `
+    <div class="grupo-card ${grupoFiltro === 'todos' ? 'active' : ''}" onclick="filtrarGrupo('todos')" style="text-align:center">
+      <span style="font-size:12px;color:rgba(255,255,255,.5)">Ver todos</span>
+    </div>`;
+}
+
+function filtrarGrupo(nome) {
+  grupoFiltro = nome;
+  if (_dadosDash) {
+    renderGrupos(_dadosDash.grupos, _dadosDash.zonas);
+    renderZonas(_dadosDash.zonas);
+  }
+}
+
+function renderZonas(zonas) {
+  if (!zonas) return;
+  const filtered = grupoFiltro === 'todos' ? zonas : zonas.filter(z => z.grupo?.nome === grupoFiltro);
+  const icone = { captacao:'💧', reservatorio:'🏗️', distribuicao:'🌐' };
+
+  document.getElementById('zonas-grid').innerHTML = filtered.map(z => {
+    const maxP = 50000;
+    const pctP = Math.min((z.pressao_mmh2o / maxP) * 100, 100);
+    const corP  = z.status_pressao === 'critico' ? '#EF233C' : z.status_pressao === 'atencao' ? '#FFB703' : '#06D6A0';
+    const corB  = z.status_balanco === 'vazamento' ? '#EF233C' : z.status_balanco === 'atencao' ? '#FFB703' : '#06D6A0';
+    return `
+    <div class="zona-card-cidade ${z.status_geral}" onclick="abrirZona(${z.id})">
+      <div class="zona-card-top">
+        <div>
+          <div class="zona-card-nome">${icone[z.tipo] || '🔵'} ${z.nome}</div>
+          <div class="zona-card-tipo">${z.tipo}</div>
+        </div>
+        <span class="zona-status-chip ${z.status_geral}">${z.status_geral === 'critico' ? '⚠️ Crítico' : z.status_geral === 'atencao' ? 'Atenção' : '✓ Normal'}</span>
+      </div>
+      <div class="zona-metrics">
+        <div class="zona-metric">
+          <div class="zona-metric-label">Pressão</div>
+          <div class="zona-metric-valor" style="color:${corP}">${(z.pressao_mmh2o/1000).toFixed(1)}<span class="zona-metric-unidade"> k</span></div>
+        </div>
+        <div class="zona-metric">
+          <div class="zona-metric-label">Perda</div>
+          <div class="zona-metric-valor" style="color:${corB}">${z.perda_pct}<span class="zona-metric-unidade">%</span></div>
+        </div>
+        <div class="zona-metric">
+          <div class="zona-metric-label">Entrada</div>
+          <div class="zona-metric-valor">${z.vazao_entrada_ls}<span class="zona-metric-unidade"> L/s</span></div>
+        </div>
+        <div class="zona-metric">
+          <div class="zona-metric-label">Saída</div>
+          <div class="zona-metric-valor">${z.vazao_saida_ls}<span class="zona-metric-unidade"> L/s</span></div>
+        </div>
+      </div>
+      <div style="margin-top:10px">
+        <div style="background:rgba(255,255,255,.08);border-radius:4px;height:4px;overflow:hidden">
+          <div style="width:${pctP}%;height:100%;background:${corP};transition:width .4s"></div>
+        </div>
+      </div>
+      <span class="zona-grupo-badge">${z.grupo?.icone || '📊'} ${z.grupo?.nome || ''}</span>
+    </div>`;
+  }).join('') || '<div style="color:rgba(255,255,255,.3);padding:20px;font-size:13px">Nenhuma zona para este grupo</div>';
+}
+
+function renderAlertas(alertas) {
+  const el = document.getElementById('alertas-list');
+  if (!alertas.length) {
+    el.innerHTML = '<div class="alerta-empty">✅ Nenhum alerta ativo</div>';
+    return;
+  }
+  el.innerHTML = alertas.map(a => `
+    <div class="alerta-item ${a.nivel}">
+      <div class="alerta-item-titulo">${a.tipo === 'pressao_critica' ? '🚨' : a.tipo === 'pressao_baixa' ? '⚠️' : '💧'} ${a.zona}</div>
+      <div class="alerta-item-sub">${a.mensagem}</div>
+      <div class="alerta-item-sub" style="margin-top:3px">${a.grupo}</div>
+    </div>`).join('');
+}
+
+function renderSensores(sensores) {
+  const el = document.getElementById('sensores-table');
+  if (!sensores || !sensores.length) { el.innerHTML = '<div style="color:rgba(255,255,255,.3)">Nenhum sensor cadastrado</div>'; return; }
+  const corBat = p => p > 50 ? '#06D6A0' : p > 20 ? '#FFB703' : '#EF233C';
+  const stCor  = s => s === 'Ativo' ? '#06D6A0' : s === 'Inativo' ? '#94a3b8' : '#FFB703';
+  el.innerHTML = `<div style="overflow-x:auto"><table style="width:100%;border-collapse:collapse">
+    <thead><tr>${['Nome','Local','Tipo','Grupo','Bateria','Status','Prox. Calibração'].map(h=>`<th style="font-size:9px;font-weight:700;color:rgba(255,255,255,.35);text-align:left;padding:6px 10px;border-bottom:1px solid rgba(255,255,255,.06);text-transform:uppercase;letter-spacing:.04em">${h}</th>`).join('')}</tr></thead>
+    <tbody>${sensores.map(s=>`<tr>
+      <td style="font-size:12px;font-weight:600;color:#fff;padding:8px 10px">${s.nome}</td>
+      <td style="font-size:11px;color:rgba(255,255,255,.45);padding:8px 10px">${s.localizacao}</td>
+      <td style="font-size:11px;color:rgba(255,255,255,.45);padding:8px 10px">${s.tipo}</td>
+      <td style="font-size:11px;padding:8px 10px"><span style="background:rgba(255,255,255,.08);padding:2px 8px;border-radius:20px;color:rgba(255,255,255,.6)">${s.grupo?.nome||'—'}</span></td>
+      <td style="font-size:12px;font-weight:700;padding:8px 10px;color:${corBat(s.bateria_pct||100)}">${s.bateria_pct||'—'}%</td>
+      <td style="padding:8px 10px"><span style="font-size:10px;font-weight:700;color:${stCor(s.status)}">${s.status}</span></td>
+      <td style="font-size:11px;color:rgba(255,255,255,.4);padding:8px 10px">${s.proxima_calibracao||'—'}</td>
+    </tr>`).join('')}</tbody>
+  </table></div>`;
+}
+
+async function abrirZona(zonaId) {
+  // Futuro: abrir modal com histórico 24h da zona
+}
+
+// Atualiza a cada 30 segundos
+carregarDashboard();
+setInterval(carregarDashboard, 30000);
+</script>
+</body>
+</html>

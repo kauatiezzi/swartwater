@@ -1,0 +1,198 @@
+﻿<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>SmartWater — Criar conta</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./styles.css">
+  <style>
+    @media (min-width: 1024px) {
+      html, body { height: 100vh; padding: 0 !important; overflow: hidden; }
+      body { flex-direction: row !important; align-items: stretch !important; justify-content: flex-start !important; }
+      .shell {
+        width: 100% !important; height: 100vh !important;
+        min-height: unset !important; border-radius: 0 !important;
+        box-shadow: none !important; max-height: none !important; overflow: hidden !important;
+      }
+      .screen { flex-direction: row; height: 100vh; }
+      /* Coluna esquerda: branding */
+      .wave-header {
+        flex: 1; padding: 64px 72px; padding-bottom: 64px;
+        display: flex; flex-direction: column; justify-content: center; gap: 16px;
+      }
+      .wave-header::after { display: none; }
+      .wave-header::before { width: 400px; height: 400px; top: -100px; right: -100px; }
+      .wh-back { align-self: flex-start; margin-bottom: 48px; }
+      .wh-logo { flex-direction: column; gap: 16px; }
+      .wh-logo svg { width: 76px; height: 86px; }
+      .wh-title { font-size: 42px; letter-spacing: -1px; margin-top: 8px; }
+      .wh-sub { font-size: 15px; margin-top: 4px; opacity: 0.7; }
+      /* Coluna direita: formulário com scroll */
+      .card-body {
+        width: 480px; min-width: 480px;
+        overflow-y: auto; padding: 48px 56px;
+        display: flex; flex-direction: column; justify-content: flex-start;
+        background: #fff;
+      }
+      /* Tela de sucesso */
+      .success-screen { flex: 1; }
+    }
+  </style>
+</head>
+<body>
+<div class="shell" id="app">
+
+  <!-- PASSO 1: PERFIL -->
+  <div class="screen on" id="s-cad1">
+    <div class="wave-header">
+      <button class="wh-back" onclick="window.location.href='index.html'">&#8592; Voltar</button>
+      <div class="wh-title">Criar conta</div>
+      <div class="wh-sub">Vamos comecar - quem e voce?</div>
+    </div>
+    <div class="card-body">
+      <div class="progress-wrap">
+        <div class="step-row"><span class="step-num">Passo 1 de 3</span><span class="step-of">Perfil</span></div>
+        <div class="progress-track"><div class="progress-fill" style="width:33%"></div></div>
+      </div>
+      <div class="section-pill">&#128100; Tipo de acesso</div>
+      <div class="role-grid">
+        <div class="role-card selected" id="role-morador" onclick="selectRole('morador')">
+          <div class="role-icon-wrap">&#127968;</div>
+          <div class="role-name">Morador</div>
+          <div class="role-desc">Consumo do seu apartamento</div>
+        </div>
+        <div class="role-card" id="role-sindico" onclick="selectRole('sindico')">
+          <div class="role-icon-wrap">&#127970;</div>
+          <div class="role-name">Sindico</div>
+          <div class="role-desc">Gestao do condominio</div>
+        </div>
+      </div>
+      <div class="field-group">
+        <label class="field-label">Nome completo</label>
+        <div class="field-wrap">
+          <input class="field-input" id="c-nome" type="text" placeholder="Ana Lima" oninput="clearErr('c-nome')">
+          <span class="field-icon">&#128100;</span>
+        </div>
+        <div class="field-err" id="c-nome-err">Informe nome e sobrenome</div>
+      </div>
+      <div class="field-group">
+        <label class="field-label">CPF</label>
+        <div class="field-wrap">
+          <input class="field-input" id="c-cpf" type="text" placeholder="000.000.000-00" oninput="maskCpf(this)" maxlength="14">
+          <span class="field-icon">&#129306;</span>
+        </div>
+        <div class="field-err" id="c-cpf-err">CPF deve ter 11 digitos</div>
+      </div>
+      <button class="btn-primary" onclick="cad1Next()">Continuar &#8594;</button>
+    </div>
+  </div>
+
+  <!-- PASSO 2: UNIDADE -->
+  <div class="screen" id="s-cad2">
+    <div class="wave-header">
+      <button class="wh-back" onclick="goScreen('s-cad1')">&#8592; Voltar</button>
+      <div class="wh-title">Sua unidade</div>
+      <div class="wh-sub">Onde voce mora?</div>
+    </div>
+    <div class="card-body">
+      <div class="progress-wrap">
+        <div class="step-row"><span class="step-num">Passo 2 de 3</span><span class="step-of">Unidade</span></div>
+        <div class="progress-track"><div class="progress-fill" style="width:66%"></div></div>
+      </div>
+      <div class="field-group">
+        <label class="field-label">Condominio</label>
+        <div class="field-wrap">
+          <input class="field-input" id="c-cond" type="text" placeholder="Ed. Reserva Verde" oninput="clearErr('c-cond')">
+          <span class="field-icon">&#127959;&#65039;</span>
+        </div>
+        <div class="field-err" id="c-cond-err">Informe o condominio</div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+        <div class="field-group">
+          <label class="field-label">Bloco</label>
+          <input class="field-input" id="c-bloco" type="text" placeholder="A" style="padding:0 14px">
+        </div>
+        <div class="field-group">
+          <label class="field-label">Apartamento</label>
+          <input class="field-input" id="c-apto" type="text" placeholder="304" style="padding:0 14px" oninput="clearErr('c-apto')">
+        </div>
+      </div>
+      <div class="field-err" id="c-apto-err" style="margin-top:-10px;margin-bottom:10px">Informe o numero do apto</div>
+      <div class="field-group">
+        <label class="field-label">E-mail</label>
+        <div class="field-wrap">
+          <input class="field-input" id="c-email" type="email" placeholder="seuemail@exemplo.com" oninput="clearErr('c-email')">
+          <span class="field-icon">&#9993;</span>
+        </div>
+        <div class="field-err" id="c-email-err">E-mail invalido</div>
+      </div>
+      <div class="field-group">
+        <label class="field-label">WhatsApp</label>
+        <div class="field-wrap">
+          <input class="field-input" id="c-tel" type="tel" placeholder="(11) 99999-0000" oninput="maskTel(this)" maxlength="15">
+          <span class="field-icon">&#128241;</span>
+        </div>
+      </div>
+      <button class="btn-primary" onclick="cad2Next()">Continuar &#8594;</button>
+    </div>
+  </div>
+
+  <!-- PASSO 3: SENHA -->
+  <div class="screen" id="s-cad3">
+    <div class="wave-header">
+      <button class="wh-back" onclick="goScreen('s-cad2')">&#8592; Voltar</button>
+      <div class="wh-title">Quase la!</div>
+      <div class="wh-sub">Crie uma senha segura</div>
+    </div>
+    <div class="card-body">
+      <div class="progress-wrap">
+        <div class="step-row"><span class="step-num">Passo 3 de 3</span><span class="step-of">Senha</span></div>
+        <div class="progress-track"><div class="progress-fill" style="width:100%"></div></div>
+      </div>
+      <div class="field-group">
+        <label class="field-label">Senha</label>
+        <div class="field-wrap">
+          <input class="field-input" id="c-pass" type="password" placeholder="Minimo 8 caracteres" oninput="checkStrength(this.value,'')">
+          <span class="field-icon" onclick="togglePass('c-pass',this)">&#128065;</span>
+        </div>
+        <div class="strength-bar">
+          <div class="seg" id="seg1"></div><div class="seg" id="seg2"></div>
+          <div class="seg" id="seg3"></div><div class="seg" id="seg4"></div>
+        </div>
+        <div class="str-label" id="str-label">Digite uma senha</div>
+        <div class="field-err" id="c-pass-err">Minimo 8 caracteres</div>
+      </div>
+      <div class="field-group">
+        <label class="field-label">Confirmar senha</label>
+        <div class="field-wrap">
+          <input class="field-input" id="c-pass2" type="password" placeholder="Repita a senha" oninput="clearErr('c-pass2')">
+          <span class="field-icon" onclick="togglePass('c-pass2',this)">&#128065;</span>
+        </div>
+        <div class="field-err" id="c-pass2-err">As senhas nao coincidem</div>
+      </div>
+      <div class="field-hint" style="margin-bottom:16px">Use maiusculas, numeros e simbolos para maior seguranca.</div>
+      <button class="btn-primary" onclick="cad3Final()">Criar minha conta &#8594;</button>
+      <div class="terms">Ao continuar voce aceita os <span>Termos de Uso</span> e a <span>Politica de Privacidade</span> do SmartWater.</div>
+    </div>
+  </div>
+
+  <!-- SUCESSO -->
+  <div class="screen" id="s-success">
+    <div class="success-screen">
+      <div style="font-size:64px;margin-bottom:4px">&#128167;</div>
+      <div class="success-chip">SmartWater ativo</div>
+      <div class="success-title">Conta criada!</div>
+      <div class="success-sub">Bem-vindo ao SmartWater. Monitore seu consumo, economize agua e receba alertas em tempo real.</div>
+      <button class="btn-primary" style="max-width:280px;margin-top:8px" onclick="window.location.replace('app.html')">Ir para o app &#8594;</button>
+    </div>
+  </div>
+
+</div>
+<script src="./js/api.js"></script>
+<script src="./js/utils.js"></script>
+<script src="./js/cadastro.js"></script>
+</body>
+</html>

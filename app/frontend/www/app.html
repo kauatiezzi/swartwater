@@ -1,0 +1,336 @@
+﻿<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>SmartWater</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./styles.css">
+  <style>
+    /* ── Mobile: shell altura fixa para scroll interno por aba ── */
+    @media (max-width: 599px) {
+      html, body { height: 100vh; height: 100dvh; overflow: hidden; }
+      .shell { height: 100vh; height: 100dvh; min-height: unset; }
+    }
+    @media (min-width: 600px) and (max-width: 767px) {
+      .shell {
+        height: calc(100vh - 56px); height: calc(100dvh - 56px);
+        max-height: calc(100vh - 56px); max-height: calc(100dvh - 56px);
+        min-height: unset;
+      }
+    }
+    @media (min-width: 768px) and (max-width: 1023px) {
+      .shell { height: calc(100vh - 80px); }
+    }
+    @media (min-width: 768px) and (max-width: 1023px) and (orientation: landscape) {
+      .shell { height: calc(100vh - 32px); }
+    }
+
+    /* ── Desktop: tela cheia com sidebar de navegação ── */
+    @media (min-width: 1024px) {
+      html, body { height: 100vh; overflow: hidden; padding: 0; }
+      body { background: var(--bg2); flex-direction: column; align-items: stretch; }
+
+      /* Shell vira o container raiz, ocupa 100% da tela em grid */
+      .shell {
+        width: 100vw; height: 100vh;
+        min-height: unset; max-height: none;
+        border-radius: 0; box-shadow: none;
+        display: grid;
+        grid-template-columns: 220px 1fr;
+        grid-template-rows: auto 1fr;
+      }
+
+      /* Header: faixa azul no topo, largura total */
+      .app-header {
+        grid-column: 1 / -1;
+        grid-row: 1;
+        padding: 14px 32px;
+      }
+      .app-header::after { display: none; }
+
+      /* Sidebar: navegação lateral */
+      .bottom-nav {
+        grid-column: 1;
+        grid-row: 2;
+        position: static;
+        flex-direction: column;
+        width: 220px; height: auto;
+        border-top: none;
+        border-right: 1px solid var(--bd);
+        box-shadow: none;
+        padding: 16px 8px;
+        gap: 4px;
+        align-items: stretch;
+      }
+      .nav-item {
+        flex-direction: row;
+        justify-content: flex-start;
+        gap: 14px;
+        padding: 13px 16px 13px;
+        border-radius: 12px;
+      }
+      .nav-item.active::before {
+        top: 50%; left: 0; transform: translateY(-50%);
+        width: 3px; height: 28px;
+        border-radius: 0 3px 3px 0;
+      }
+      .nav-item .nav-label { font-size: 13px; font-weight: 600; }
+      .nav-badge { top: 6px; left: 28px; right: auto; }
+
+      /* Conteúdo principal: coluna direita */
+      .app-content {
+        grid-column: 2;
+        grid-row: 2;
+        padding: 28px 40px 28px;
+      }
+
+      /* Grids aproveitam a largura extra */
+      .notif-summary { grid-template-columns: repeat(4, 1fr); }
+      .sindico-stats  { grid-template-columns: repeat(3, 1fr); }
+
+      /* Painel lateral antigo: removido */
+      .desktop-panel { display: none !important; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- SHELL (app movel) -->
+<div class="shell" id="app">
+
+  <!-- HEADER -->
+  <div class="app-header" id="app-header">
+    <div class="ah-row">
+      <div>
+        <div class="ah-greeting" id="ah-greeting">Carregando...</div>
+        <div class="ah-name" id="ah-name">SmartWater</div>
+      </div>
+      <div style="display:flex;align-items:center;gap:8px">
+        <a href="./cidade.html" id="btn-cidade" title="Painel Cidade DAAE" style="display:none;width:32px;height:32px;border-radius:50%;background:rgba(255,255,255,.15);border:1.5px solid rgba(255,255,255,.25);align-items:center;justify-content:center;font-size:15px;text-decoration:none;color:#fff">🌆</a>
+        <div class="ah-avatar" id="ah-avatar" onclick="switchTab('perfil')">&#128100;</div>
+      </div>
+    </div>
+    <div id="cidade-alerta-banner" style="display:none;margin-top:8px;background:rgba(239,35,60,.2);border-radius:10px;padding:6px 12px;font-size:11px;color:#fff;display:flex;align-items:center;gap:6px"></div>
+  </div>
+
+  <!-- ABA: DASHBOARD -->
+  <div class="app-content" id="tab-dashboard">
+    <div style="padding-top:6px">
+      <div class="loading-shimmer" style="height:180px;border-radius:24px;margin-bottom:14px"></div>
+      <div class="loading-shimmer" style="height:80px;border-radius:18px;margin-bottom:14px"></div>
+      <div class="loading-shimmer" style="height:200px;border-radius:20px;margin-bottom:14px"></div>
+    </div>
+  </div>
+
+  <!-- ABA: NOTIFICACOES -->
+  <div class="app-content" id="tab-notificacoes" style="display:none">
+    <div style="padding-top:6px">
+      <div class="loading-shimmer" style="height:120px;border-radius:20px;margin-bottom:14px"></div>
+    </div>
+  </div>
+
+  <!-- ABA: SINDICO / REDE (conteúdo varia por perfil) -->
+  <div class="app-content" id="tab-sindico" style="display:none"></div>
+
+  <!-- ABA EXTRA: CONSUMO DETALHADO (injetada por JS) -->
+  <div class="app-content" id="tab-consumo-det" style="display:none">
+    <div style="padding-top:6px">
+      <button onclick="voltarDashboard()" style="display:inline-flex;align-items:center;gap:6px;background:var(--bg3);border:none;color:var(--txt2);font-size:12px;font-weight:600;padding:7px 14px;border-radius:20px;cursor:pointer;font-family:var(--body);margin-bottom:12px">&#8592; Voltar ao Dashboard</button>
+      <div class="loading-shimmer" style="height:280px;border-radius:16px"></div>
+    </div>
+  </div>
+
+  <!-- ABA: PERFIL -->
+  <div class="app-content" id="tab-perfil" style="display:none;padding:0;overflow-y:auto"></div>
+
+  <!-- BOTTOM NAV -->
+  <nav class="bottom-nav">
+    <button class="nav-item active" id="nav-dashboard" onclick="switchTab('dashboard')">
+      <span class="nav-icon">&#128167;</span>
+      <span class="nav-label">Consumo</span>
+    </button>
+    <button class="nav-item" id="nav-notificacoes" onclick="switchTab('notificacoes')">
+      <span class="nav-icon">&#128276;</span>
+      <span class="nav-label">Alertas</span>
+      <span class="nav-badge" id="badge-notif" style="display:none">0</span>
+    </button>
+    <button class="nav-item" id="nav-sindico" onclick="switchTab('sindico')">
+      <span class="nav-icon">&#127970;</span>
+      <span class="nav-label">Sindico</span>
+    </button>
+    <button class="nav-item" id="nav-perfil" onclick="switchTab('perfil')">
+      <span class="nav-icon">&#128100;</span>
+      <span class="nav-label">Perfil</span>
+    </button>
+  </nav>
+</div>
+
+<!-- PAINEL LATERAL DESKTOP (visivel em telas >= 1024px via CSS) -->
+<div class="desktop-panel" id="desktop-panel">
+
+  <!-- Cabecalho do painel -->
+  <div style="display:flex;align-items:center;gap:14px">
+    <svg width="36" height="40" viewBox="0 0 160 180" fill="none">
+      <defs>
+        <linearGradient id="dpg1" x1="40" y1="10" x2="130" y2="170" gradientUnits="userSpaceOnUse">
+          <stop offset="0%" stop-color="#48CAE4"/><stop offset="100%" stop-color="#023E8A"/>
+        </linearGradient>
+      </defs>
+      <path d="M80 8C80 8 22 72 22 112C22 145 48 168 80 168C112 168 138 145 138 112C138 72 80 8 80 8Z" fill="url(#dpg1)"/>
+      <line x1="80" y1="140" x2="80" y2="100" stroke="white" stroke-width="8" stroke-linecap="round"/>
+      <line x1="80" y1="118" x2="58" y2="118" stroke="white" stroke-width="8" stroke-linecap="round"/>
+      <line x1="58" y1="118" x2="58" y2="96" stroke="white" stroke-width="8" stroke-linecap="round"/>
+      <line x1="80" y1="110" x2="102" y2="110" stroke="white" stroke-width="8" stroke-linecap="round"/>
+      <line x1="102" y1="110" x2="102" y2="90" stroke="white" stroke-width="8" stroke-linecap="round"/>
+      <line x1="80" y1="100" x2="80" y2="82" stroke="white" stroke-width="8" stroke-linecap="round"/>
+      <circle cx="58" cy="94" r="10" fill="white"/><circle cx="102" cy="88" r="10" fill="white"/><circle cx="80" cy="80" r="10" fill="white"/>
+    </svg>
+    <div>
+      <div style="font-family:var(--font);font-size:26px;font-weight:800;color:var(--w3);letter-spacing:-1px">Smart<span style="color:var(--w1)">Water</span></div>
+      <div style="font-size:12px;color:var(--txt2)">Plataforma de monitoramento inteligente</div>
+    </div>
+  </div>
+
+  <!-- Cards rapidos -->
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+
+    <div class="dp-stat-card" style="background:linear-gradient(145deg,#0077B6,#03045E);color:#fff">
+      <div class="dp-stat-label" style="color:rgba(255,255,255,.55)">
+        <span class="dp-stat-label-dot" style="background:#90E0EF;opacity:1"></span>
+        Consumo do mes
+      </div>
+      <div class="dp-num-wrap">
+        <span class="dp-num-int" style="color:#fff" id="dp-consumo">—</span>
+        <span class="dp-num-unit" style="color:rgba(255,255,255,.6)">L</span>
+      </div>
+      <div class="dp-stat-sub" style="color:rgba(255,255,255,.5)">
+        <span class="dp-trend down" id="dp-trend-consumo" style="background:rgba(6,214,160,.18);color:#6EFFD8">— %</span>
+        vs mes anterior
+      </div>
+    </div>
+
+    <div class="dp-stat-card" style="background:var(--bg)">
+      <div class="dp-stat-label" style="color:var(--txt3)">
+        <span class="dp-stat-label-dot" style="background:var(--w2);opacity:.6"></span>
+        Fatura estimada
+      </div>
+      <div class="dp-num-wrap">
+        <span class="dp-num-dec" style="color:var(--txt3)">R$</span>
+        <span class="dp-num-int" style="color:var(--w2)" id="dp-fatura">—</span>
+      </div>
+      <div class="dp-stat-sub">
+        <span class="dp-trend info">&#128202; Projecao</span>
+        do fechamento
+      </div>
+    </div>
+
+    <div class="dp-stat-card" style="background:var(--okl)">
+      <div class="dp-stat-label" style="color:#047a57">
+        <span class="dp-stat-label-dot" style="background:var(--ok);opacity:1"></span>
+        Meta mensal
+      </div>
+      <div class="dp-num-wrap">
+        <span class="dp-num-int" style="color:var(--ok)" id="dp-meta-pct">—</span>
+        <span class="dp-num-unit" style="color:var(--ok);opacity:.7;font-size:20px;padding-bottom:4px">%</span>
+      </div>
+      <div class="dp-stat-sub" style="color:#047a57">
+        <span class="dp-trend down" style="background:rgba(6,214,160,.15);color:#047a57">4.500 L</span>
+        limite mensal
+      </div>
+    </div>
+
+    <div class="dp-stat-card" style="background:var(--warnl)">
+      <div class="dp-stat-label" style="color:#8a6200">
+        <span class="dp-stat-label-dot" style="background:var(--warn);opacity:1"></span>
+        Alertas ativos
+      </div>
+      <div class="dp-num-wrap">
+        <span class="dp-num-int" style="color:var(--warn)" id="dp-alertas">—</span>
+      </div>
+      <div class="dp-stat-sub" style="color:#8a6200">
+        <span class="dp-trend warn">&#9888;&#65039; nao lidos</span>
+        neste momento
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Grafico tendencia -->
+  <div style="background:var(--bg);border-radius:24px;padding:24px;box-shadow:0 2px 16px rgba(0,50,120,0.07)">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
+      <div style="font-family:var(--font);font-size:15px;font-weight:800;color:var(--txt)">Tendencia — ultimas 4 semanas</div>
+      <div style="font-size:11px;color:var(--txt2)">L/dia</div>
+    </div>
+    <svg viewBox="0 0 400 100" width="100%" style="overflow:visible">
+      <defs>
+        <linearGradient id="lineGrad" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="rgba(0,180,216,0.25)"/>
+          <stop offset="100%" stop-color="rgba(0,180,216,0)"/>
+        </linearGradient>
+      </defs>
+      <line x1="0" y1="20" x2="400" y2="20" stroke="var(--bd)" stroke-width="1" stroke-dasharray="4,4"/>
+      <line x1="0" y1="50" x2="400" y2="50" stroke="var(--bd)" stroke-width="1" stroke-dasharray="4,4"/>
+      <line x1="0" y1="80" x2="400" y2="80" stroke="var(--bd)" stroke-width="1" stroke-dasharray="4,4"/>
+      <path d="M0,70 C30,65 60,45 90,55 C120,65 150,30 180,40 C210,50 240,20 270,35 C300,50 330,25 360,30 C380,33 400,28 400,28 L400,100 L0,100 Z" fill="url(#lineGrad)"/>
+      <path d="M0,70 C30,65 60,45 90,55 C120,65 150,30 180,40 C210,50 240,20 270,35 C300,50 330,25 360,30 C380,33 400,28 400,28" fill="none" stroke="var(--w1)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+      <circle cx="400" cy="28" r="5" fill="var(--w1)"/>
+      <circle cx="400" cy="28" r="9" fill="var(--w1)" opacity=".2"/>
+      <text x="0"   y="98" font-size="10" fill="var(--txt3)" font-family="DM Sans,sans-serif">Sem 1</text>
+      <text x="130" y="98" font-size="10" fill="var(--txt3)" font-family="DM Sans,sans-serif">Sem 2</text>
+      <text x="260" y="98" font-size="10" fill="var(--txt3)" font-family="DM Sans,sans-serif">Sem 3</text>
+      <text x="358" y="98" font-size="10" fill="var(--txt3)" font-family="DM Sans,sans-serif">Hoje</text>
+    </svg>
+  </div>
+
+  <!-- Alertas recentes -->
+  <div style="background:var(--bg);border-radius:24px;padding:24px;box-shadow:0 2px 16px rgba(0,50,120,0.07)">
+    <div style="font-family:var(--font);font-size:15px;font-weight:800;color:var(--txt);margin-bottom:16px">&#128276; Alertas recentes</div>
+    <div id="dp-notifs-list">
+      <div class="dp-notif-row" style="border-left:3px solid var(--err)">
+        <div>&#128680;</div>
+        <div><div style="font-size:12px;font-weight:700;color:var(--txt)">Possivel vazamento detectado</div><div style="font-size:11px;color:var(--txt2);margin-top:2px">Consumo noturno anormal — Agora</div></div>
+      </div>
+      <div class="dp-notif-row" style="border-left:3px solid var(--warn)">
+        <div>&#128202;</div>
+        <div><div style="font-size:12px;font-weight:700;color:var(--txt)">Consumo 42% acima da media</div><div style="font-size:11px;color:var(--txt2);margin-top:2px">2h atras</div></div>
+      </div>
+      <div class="dp-notif-row" style="border-left:3px solid var(--warn)">
+        <div>&#127919;</div>
+        <div><div style="font-size:12px;font-weight:700;color:var(--txt)">Meta mensal em risco (85%)</div><div style="font-size:11px;color:var(--txt2);margin-top:2px">Hoje, 08:30</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Dicas -->
+  <div style="background:linear-gradient(135deg,#e8f7fd,#d0eef9);border-radius:24px;padding:24px;border:1.5px solid rgba(0,180,216,.15)">
+    <div style="font-family:var(--font);font-size:15px;font-weight:800;color:var(--w3);margin-bottom:14px">&#128161; Dicas de economia</div>
+    <div style="display:flex;flex-direction:column;gap:12px">
+      <div style="display:flex;gap:10px;align-items:flex-start">
+        <span style="font-size:20px">&#128703;</span>
+        <div><div style="font-size:13px;font-weight:600;color:var(--txt)">Reduza o tempo no banho</div><div style="font-size:11px;color:var(--txt2);margin-top:2px">Cada minuto a menos economiza ~9L por dia.</div></div>
+      </div>
+      <div style="display:flex;gap:10px;align-items:flex-start">
+        <span style="font-size:20px">&#128295;</span>
+        <div><div style="font-size:13px;font-weight:600;color:var(--txt)">Verifique goteiras hoje</div><div style="font-size:11px;color:var(--txt2);margin-top:2px">Uma torneira pingando gasta ate 46L/dia.</div></div>
+      </div>
+      <div style="display:flex;gap:10px;align-items:flex-start">
+        <span style="font-size:20px">&#127769;</span>
+        <div><div style="font-size:13px;font-weight:600;color:var(--txt)">Monitore o consumo noturno</div><div style="font-size:11px;color:var(--txt2);margin-top:2px">Pico entre 00h-05h pode indicar vazamento.</div></div>
+      </div>
+    </div>
+  </div>
+
+  <div style="font-size:11px;color:var(--txt3);text-align:center;padding-bottom:8px">
+    SmartWater v2.0 · Plataforma Inteligente de Monitoramento
+  </div>
+
+</div>
+
+<script src="./js/api.js"></script>
+<script src="./js/utils.js"></script>
+<script src="./js/app.js"></script>
+</body>
+</html>

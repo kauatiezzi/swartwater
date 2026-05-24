@@ -1,0 +1,351 @@
+{
+  "versao": "2026.05",
+  "atualizado_em": "2026-05-24T10:00:00-03:00",
+  "origem": {
+    "grupo": "Grupo de Fenomenos de Transporte",
+    "formato_entrega": "json",
+    "descricao": "Arquivo de integracao usado pelo SmartWater para simular as leituras dos grupos externos e os dados administrativos do DAAE."
+  },
+  "daae": {
+    "cidade": "Araraquara",
+    "responsavel": "DAAE - Centro de Operacoes",
+    "dashboard_operacional_url": "https://dashboard-grupo5.exemplo/app",
+    "contato_operacional": "operacao@daae.araraquara.sp.gov.br"
+  },
+  "reservatorios": [
+    {
+      "id": "res-enterrado-sedenho",
+      "nome": "Reservatorio Enterrado Sedenho",
+      "tipo": "enterrado",
+      "descricao": "Reservatorio afundado, abaixo do nivel do solo.",
+      "zona": "Vila Sedenho",
+      "capacidade_l": 180000,
+      "nivel_pct": 54,
+      "status": "atencao",
+      "pressao_saida_mmh2o": 14200
+    },
+    {
+      "id": "res-semi-enterrado-harmonia",
+      "nome": "Reservatorio Semi-enterrado Harmonia",
+      "tipo": "semi_enterrado",
+      "descricao": "Reservatorio parcialmente abaixo do solo.",
+      "zona": "Vila Harmonia",
+      "capacidade_l": 240000,
+      "nivel_pct": 68,
+      "status": "normal",
+      "pressao_saida_mmh2o": 19600
+    },
+    {
+      "id": "res-apoiado-centro",
+      "nome": "Reservatorio Apoiado Centro",
+      "tipo": "apoiado",
+      "descricao": "Reservatorio apoiado ao nivel do terreno.",
+      "zona": "Centro",
+      "capacidade_l": 300000,
+      "nivel_pct": 81,
+      "status": "normal",
+      "pressao_saida_mmh2o": 23800
+    },
+    {
+      "id": "res-elevado-principal",
+      "nome": "Reservatorio Elevado Principal",
+      "tipo": "elevado",
+      "descricao": "Reservatorio elevado para distribuicao por gravidade.",
+      "zona": "Reservatorio Principal",
+      "capacidade_l": 420000,
+      "nivel_pct": 76,
+      "status": "normal",
+      "pressao_saida_mmh2o": 29100
+    }
+  ],
+  "condominios": [
+    {
+      "id": "cond-jardim-das-aguas",
+      "nome": "Condominio Jardim das Aguas",
+      "bairro": "Vila Harmonia",
+      "zona_rede": "Vila Harmonia",
+      "reservatorio": "Reservatorio Principal",
+      "unidades": 48,
+      "hidrante_virtual": "HV-DAAE-001",
+      "meta_mensal_l": 216000,
+      "consumo_mes_l": 188420,
+      "status": "atencao"
+    },
+    {
+      "id": "cond-villa-azul",
+      "nome": "Condominio Villa Azul",
+      "bairro": "Centro",
+      "zona_rede": "Centro",
+      "reservatorio": "Reservatorio Principal",
+      "unidades": 36,
+      "hidrante_virtual": "HV-DAAE-002",
+      "meta_mensal_l": 162000,
+      "consumo_mes_l": 141880,
+      "status": "normal"
+    },
+    {
+      "id": "cond-reserva-sedenho",
+      "nome": "Condominio Reserva Sedenho",
+      "bairro": "Vila Sedenho",
+      "zona_rede": "Vila Sedenho",
+      "reservatorio": "Reservatorio Subterraneo Sedenho",
+      "unidades": 28,
+      "hidrante_virtual": "HV-DAAE-003",
+      "meta_mensal_l": 126000,
+      "consumo_mes_l": 133760,
+      "status": "critico"
+    }
+  ],
+  "equipamentos": [
+    {
+      "id": "eq-bomba-submersa-sedenho",
+      "nome": "Bomba Submersa Sedenho",
+      "tipo": "bomba_submersa",
+      "reservatorio_id": "res-enterrado-sedenho",
+      "localizacao": "Reservatorio subterraneo - Vila Sedenho",
+      "instalacao": "subsolo",
+      "status": "Atencao",
+      "criticidade": 3,
+      "bateria_pct": 100,
+      "protocolo": "LoRaWAN",
+      "vazao_ls": 18.4,
+      "pressao_mmh2o": 14200,
+      "corrente_a": 14.8,
+      "temperatura_c": 41.2,
+      "ultima_manutencao": "2026-04-18",
+      "proxima_manutencao": "2026-06-18"
+    },
+    {
+      "id": "eq-bomba-recalque-harmonia",
+      "nome": "Bomba de Recalque Harmonia",
+      "tipo": "bomba_recalque",
+      "reservatorio_id": "res-semi-enterrado-harmonia",
+      "localizacao": "Casa de bombas - Vila Harmonia",
+      "instalacao": "casa_bombas",
+      "status": "Ativo",
+      "criticidade": 3,
+      "bateria_pct": 100,
+      "protocolo": "LoRaWAN",
+      "vazao_ls": 15.4,
+      "pressao_mmh2o": 19600,
+      "corrente_a": 11.2,
+      "temperatura_c": 36.5,
+      "ultima_manutencao": "2026-03-12",
+      "proxima_manutencao": "2026-09-12"
+    },
+    {
+      "id": "eq-medidor-master-jardim",
+      "nome": "Medidor Master Jardim das Aguas",
+      "tipo": "vazao",
+      "reservatorio_id": "res-semi-enterrado-harmonia",
+      "localizacao": "Entrada do condominio Jardim das Aguas",
+      "status": "Ativo",
+      "criticidade": 3,
+      "bateria_pct": 88,
+      "protocolo": "LoRaWAN",
+      "vazao_ls": 8.9
+    },
+    {
+      "id": "eq-macromedidor-centro",
+      "nome": "Macromedidor Centro",
+      "tipo": "macromedidor",
+      "reservatorio_id": "res-apoiado-centro",
+      "localizacao": "Saida do Reservatorio Apoiado Centro",
+      "status": "Ativo",
+      "criticidade": 3,
+      "bateria_pct": 91,
+      "protocolo": "LoRaWAN",
+      "vazao_ls": 20.8
+    },
+    {
+      "id": "eq-pressao-centro",
+      "nome": "Manometro Centro",
+      "tipo": "pressao",
+      "reservatorio_id": "res-apoiado-centro",
+      "localizacao": "Rede Centro",
+      "status": "Ativo",
+      "criticidade": 2,
+      "bateria_pct": 74,
+      "protocolo": "LoRaWAN",
+      "pressao_mmh2o": 23800
+    },
+    {
+      "id": "eq-medidor-nivel-elevado",
+      "nome": "Medidor de Nivel Elevado Principal",
+      "tipo": "nivel",
+      "reservatorio_id": "res-elevado-principal",
+      "localizacao": "Reservatorio Elevado Principal",
+      "status": "Ativo",
+      "criticidade": 3,
+      "bateria_pct": 86,
+      "protocolo": "LoRaWAN",
+      "nivel_pct": 76
+    }
+  ],
+  "leituras_rede": [
+    {
+      "zona": "Vila Harmonia",
+      "timestamp": "2026-05-24T09:55:00-03:00",
+      "pressao_mmh2o": 19600,
+      "vazao_entrada_ls": 15.4,
+      "vazao_saida_ls": 13.7,
+      "perda_pct": 11.0,
+      "status": "atencao"
+    },
+    {
+      "zona": "Centro",
+      "timestamp": "2026-05-24T09:55:00-03:00",
+      "pressao_mmh2o": 23800,
+      "vazao_entrada_ls": 20.8,
+      "vazao_saida_ls": 19.9,
+      "perda_pct": 4.3,
+      "status": "normal"
+    },
+    {
+      "zona": "Vila Sedenho",
+      "timestamp": "2026-05-24T09:55:00-03:00",
+      "pressao_mmh2o": 14200,
+      "vazao_entrada_ls": 12.2,
+      "vazao_saida_ls": 9.8,
+      "perda_pct": 19.7,
+      "status": "critico"
+    }
+  ],
+  "usuarios_teste": [
+    {
+      "nome": "Marina Lopes",
+      "email": "marina.morador@smartwater.test",
+      "cpf": "39011122001",
+      "perfil": "morador",
+      "condominio": "Condominio Jardim das Aguas",
+      "bloco": "A",
+      "apto": "101",
+      "tel": "(16) 99111-0101",
+      "meta_mensal": 4300
+    },
+    {
+      "nome": "Rafael Nunes",
+      "email": "rafael.morador@smartwater.test",
+      "cpf": "39011122002",
+      "perfil": "morador",
+      "condominio": "Condominio Jardim das Aguas",
+      "bloco": "A",
+      "apto": "204",
+      "tel": "(16) 99111-0204",
+      "meta_mensal": 5200
+    },
+    {
+      "nome": "Bianca Prado",
+      "email": "bianca.morador@smartwater.test",
+      "cpf": "39011122003",
+      "perfil": "morador",
+      "condominio": "Condominio Villa Azul",
+      "bloco": "B",
+      "apto": "302",
+      "tel": "(16) 99111-0302",
+      "meta_mensal": 3900
+    },
+    {
+      "nome": "Eduardo Matos",
+      "email": "eduardo.morador@smartwater.test",
+      "cpf": "39011122004",
+      "perfil": "morador",
+      "condominio": "Condominio Reserva Sedenho",
+      "bloco": "C",
+      "apto": "407",
+      "tel": "(16) 99111-0407",
+      "meta_mensal": 4500
+    },
+    {
+      "nome": "Camila Torres",
+      "email": "camila.sindico@smartwater.test",
+      "cpf": "39011122005",
+      "perfil": "sindico",
+      "condominio": "Condominio Jardim das Aguas",
+      "bloco": "ADM",
+      "apto": "S1",
+      "tel": "(16) 99222-0001",
+      "meta_mensal": 4500
+    },
+    {
+      "nome": "Operador DAAE",
+      "email": "operador@daae.com.br",
+      "cpf": "39011122006",
+      "perfil": "operador",
+      "condominio": "DAAE",
+      "bloco": "CO",
+      "apto": "001",
+      "tel": "(16) 3333-0000",
+      "meta_mensal": 4500
+    }
+  ],
+  "contas": [
+    {
+      "email_usuario": "marina.morador@smartwater.test",
+      "mes_ref": "2026-05",
+      "consumo_l": 4120,
+      "valor_rs": 78.04,
+      "status": "pendente",
+      "data_vencimento": "2026-06-15"
+    },
+    {
+      "email_usuario": "rafael.morador@smartwater.test",
+      "mes_ref": "2026-05",
+      "consumo_l": 6930,
+      "valor_rs": 114.86,
+      "status": "atrasado",
+      "data_vencimento": "2026-05-15"
+    },
+    {
+      "email_usuario": "bianca.morador@smartwater.test",
+      "mes_ref": "2026-05",
+      "consumo_l": 2840,
+      "valor_rs": 60.28,
+      "status": "pago",
+      "data_vencimento": "2026-05-15",
+      "data_pagamento": "2026-05-12"
+    },
+    {
+      "email_usuario": "eduardo.morador@smartwater.test",
+      "mes_ref": "2026-05",
+      "consumo_l": 8120,
+      "valor_rs": 129.04,
+      "status": "pendente",
+      "data_vencimento": "2026-06-15"
+    }
+  ],
+  "alertas": [
+    {
+      "publico": "daae",
+      "nivel": "critico",
+      "tipo": "bomba_submersa",
+      "titulo": "Bomba submersa com pressao critica",
+      "descricao": "Bomba Submersa Sedenho operando abaixo do minimo: 14200 mmH2O. Recomenda-se abrir o dashboard operacional do Grupo 5.",
+      "zona": "Vila Sedenho",
+      "dashboard_recomendado": true
+    },
+    {
+      "publico": "sindico",
+      "nivel": "alerta",
+      "tipo": "consumo_condominio",
+      "titulo": "Consumo do condominio acima da meta",
+      "descricao": "Reserva Sedenho consumiu 6,2% acima da meta mensal. Verificar unidades com maior consumo.",
+      "condominio": "Condominio Reserva Sedenho"
+    },
+    {
+      "publico": "morador",
+      "email_usuario": "rafael.morador@smartwater.test",
+      "nivel": "critico",
+      "tipo": "vazamento_unidade",
+      "titulo": "Possivel vazamento na unidade",
+      "descricao": "Consumo continuo entre 02h e 05h no Bloco A Apto 204."
+    }
+  ],
+  "credenciais_teste": {
+    "senha_padrao": "Smart@123",
+    "morador": "marina.morador@smartwater.test",
+    "morador_alerta": "rafael.morador@smartwater.test",
+    "sindico": "camila.sindico@smartwater.test",
+    "operador_daae": "operador@daae.com.br"
+  }
+}

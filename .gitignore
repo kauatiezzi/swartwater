@@ -1,0 +1,17 @@
+.vscode/
+.specstory/
+.github/workflows/
+app/.vscode/
+app/.specstory/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+venv/
+.venv/
+node_modules/
+*.db
+*.sqlite
+*.sqlite3
+dist/
+build/
+android/app/build/

@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teste Dashboard Vazão</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+    <h1>🚀 Teste de Integração Backend</h1>
+
+    <div class="card">
+        <h2>1. Testar Login</h2>
+        <input type="text" id="user" placeholder="Usuário">
+        <input type="password" id="pass" placeholder="Senha">
+        <button onclick="testarLogin()">Verificar Acesso</button>
+        <div id="login-res" class="result"></div>
+    </div>
+
+    <div class="card">
+       <h2>2. Calcular Vazão</h2>
+    <input type="number" id="vol" placeholder="Volume (L)">
+    <input type="number" id="temp" placeholder="Tempo (s)">
+    
+    <button onclick="testarCalculo()">Calcular</button>
+    
+    <div id="calc-res" class="result"></div>
+    </div>
+
+    <div class="card">
+        <h2>3. Sensores Ativos</h2>
+        <button onclick="carregarSensores()">Atualizar Lista</button>
+        <ul id="lista-sensores" style="margin-top: 15px;"></ul>
+    </div>
+
+    <div class="dashboard-grid">
+    <div class="card dash-card">
+        <h3>Sensores Monitorados</h3>
+        <p id="dash-total">--</p>
+    </div>
+    <div class="card dash-card">
+        <h3>Status: Ativos</h3>
+        <p id="dash-ativos" style="color: #28a745;">--</p>
+    </div>
+    <div class="card dash-card">
+        <h3>Última Vazão</h3>
+        <p id="dash-vazao">0.0 L/s</p>
+    </div>
+</div>
+
+    <script src="{{ url_for('static', filename='arquivo.js') }}"></script>
+</body>
+</html>

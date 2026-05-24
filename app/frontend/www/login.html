@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>SmartWater — Entrar</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./styles.css">
+  <style>
+    @media (min-width: 1024px) {
+      html, body { height: 100vh; padding: 0 !important; overflow: hidden; }
+      body { flex-direction: row !important; align-items: stretch !important; justify-content: flex-start !important; }
+      .shell {
+        width: 100% !important; height: 100vh !important;
+        min-height: unset !important; border-radius: 0 !important;
+        box-shadow: none !important; max-height: none !important; overflow: hidden !important;
+      }
+      /* Cada screen: duas colunas */
+      .screen { flex-direction: row; height: 100vh; }
+      /* Coluna esquerda: branding */
+      .wave-header {
+        flex: 1; padding: 64px 72px; padding-bottom: 64px;
+        display: flex; flex-direction: column; justify-content: center; gap: 16px;
+      }
+      .wave-header::after { display: none; }
+      .wave-header::before { width: 400px; height: 400px; top: -100px; right: -100px; }
+      .wh-back { align-self: flex-start; margin-bottom: 48px; }
+      .wh-logo { flex-direction: column; gap: 16px; }
+      .wh-logo svg { width: 76px; height: 86px; }
+      .wh-title { font-size: 42px; letter-spacing: -1px; margin-top: 8px; }
+      .wh-sub { font-size: 15px; margin-top: 4px; opacity: 0.7; }
+      /* Coluna direita: formulário */
+      .card-body {
+        width: 460px; min-width: 460px;
+        overflow-y: auto; padding: 64px 56px;
+        display: flex; flex-direction: column; justify-content: center;
+        background: #fff;
+      }
+      /* Tela de sucesso sem wave-header */
+      .success-screen { flex: 1; }
+    }
+  </style>
+</head>
+<body>
+<div class="shell" id="app">
+
+  <!-- LOGIN -->
+  <div class="screen on" id="s-login">
+    <div class="wave-header">
+      <button class="wh-back" onclick="window.location.href='index.html'">&#8592; Início</button>
+      <div class="wh-logo">
+        <svg width="32" height="36" viewBox="0 0 160 180" fill="none">
+          <path d="M80 8C80 8 22 72 22 112C22 145 48 168 80 168C112 168 138 145 138 112C138 72 80 8 80 8Z" fill="rgba(255,255,255,0.25)"/>
+          <line x1="80" y1="140" x2="80" y2="100" stroke="white" stroke-width="8" stroke-linecap="round"/>
+          <line x1="80" y1="118" x2="58" y2="118" stroke="white" stroke-width="8" stroke-linecap="round"/>
+          <line x1="58" y1="118" x2="58" y2="96" stroke="white" stroke-width="8" stroke-linecap="round"/>
+          <line x1="80" y1="110" x2="102" y2="110" stroke="white" stroke-width="8" stroke-linecap="round"/>
+          <line x1="102" y1="110" x2="102" y2="90" stroke="white" stroke-width="8" stroke-linecap="round"/>
+          <line x1="80" y1="100" x2="80" y2="82" stroke="white" stroke-width="8" stroke-linecap="round"/>
+          <circle cx="58" cy="94" r="12" fill="white"/><circle cx="102" cy="88" r="12" fill="white"/><circle cx="80" cy="80" r="12" fill="white"/>
+        </svg>
+        <div><div class="wh-title">SmartWater</div><div class="wh-sub">Entre com sua conta</div></div>
+      </div>
+    </div>
+    <div class="card-body">
+      <div class="field-group">
+        <label class="field-label">E-mail ou CPF</label>
+        <div class="field-wrap">
+          <input class="field-input" id="l-email" type="text" placeholder="seuemail@exemplo.com" oninput="clearErr('l-email')" onkeydown="if(event.key==='Enter')document.getElementById('l-pass').focus()">
+          <span class="field-icon">✉</span>
+        </div>
+        <div class="field-err" id="l-email-err">Informe o e-mail ou CPF</div>
+      </div>
+      <div class="field-group">
+        <label class="field-label">Senha</label>
+        <div class="field-wrap">
+          <input class="field-input" id="l-pass" type="password" placeholder="Sua senha" oninput="clearErr('l-pass')" onkeydown="if(event.key==='Enter')doLogin()">
+          <span class="field-icon" onclick="togglePass('l-pass',this)">👁</span>
+        </div>
+        <div class="field-err" id="l-pass-err">E-mail ou senha incorretos</div>
+      </div>
+      <div class="forgot-row"><button onclick="goScreen('s-forgot')">Esqueceu a senha?</button></div>
+      <button class="btn-primary" onclick="doLogin()">Entrar</button>
+      <div class="divider"><div class="div-line"></div><div class="div-txt">ou</div><div class="div-line"></div></div>
+      <div class="link-row">Não tem conta? <button class="link-btn" onclick="window.location.href='cadastro.html'">Cadastre-se grátis</button></div>
+    </div>
+  </div>
+
+  <!-- ESQUECI A SENHA -->
+  <div class="screen" id="s-forgot">
+    <div class="wave-header">
+      <button class="wh-back" onclick="goScreen('s-login')">&#8592; Voltar</button>
+      <div class="wh-title">Recuperar senha</div>
+      <div class="wh-sub">Enviaremos um link para seu e-mail</div>
+    </div>
+    <div class="card-body">
+      <div class="field-group">
+        <label class="field-label">E-mail cadastrado</label>
+        <div class="field-wrap">
+          <input class="field-input" id="f-email" type="email" placeholder="seuemail@exemplo.com" onkeydown="if(event.key==='Enter')doForgot()">
+          <span class="field-icon">✉</span>
+        </div>
+        <div class="field-err" id="f-email-err">Informe um e-mail válido</div>
+      </div>
+      <button class="btn-primary" onclick="doForgot()">Enviar link de recuperação</button>
+      <div class="link-row" style="margin-top:14px"><button class="link-btn" onclick="goScreen('s-login')">← Voltar ao login</button></div>
+    </div>
+  </div>
+
+  <!-- LINK ENVIADO -->
+  <div class="screen" id="s-sent">
+    <div class="success-screen">
+      <div style="font-size:64px;margin-bottom:4px">📩</div>
+      <div class="success-chip">E-mail enviado</div>
+      <div class="success-title">Link enviado!</div>
+      <div class="success-sub" id="sent-msg">Verifique sua caixa de entrada. O link expira em 30 minutos.</div>
+      <button class="btn-primary" style="max-width:280px;margin-top:8px" onclick="goScreen('s-login')">Voltar ao login</button>
+    </div>
+  </div>
+
+</div>
+<script src="./js/api.js"></script>
+<script src="./js/utils.js"></script>
+<script src="./js/login.js"></script>
+</body>
+</html>

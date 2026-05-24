@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>SmartWater — Acesso DAAE</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --w1: #00B4D8; --w2: #0077B6; --w3: #023E8A; --w4: #03045E;
+      --a2: #90E0EF; --a3: #CAF0F8;
+      --ok: #06D6A0; --okl: #E8FFF9;
+      --warn: #FFB703; --warnl: #FFF8E6;
+      --err: #EF233C; --errl: #FFF0F3;
+      --bg: #ffffff; --bg2: #f0f6fb; --txt: #03045E; --txt2: #5a6a80; --txt3: #94a3b8;
+      --bd: rgba(0,119,182,0.15);
+      --font: 'Plus Jakarta Sans', system-ui, sans-serif;
+      --body: 'Plus Jakarta Sans', system-ui, sans-serif;
+    }
+    html, body { height: 100%; font-family: var(--body); background: var(--bg2); color: var(--txt); }
+
+    /* ── Header ── */
+    .daae-header {
+      background: linear-gradient(135deg, var(--w2), var(--w4));
+      padding: 18px 28px;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .daae-logo { display: flex; align-items: center; gap: 12px; }
+    .daae-title { font-family: var(--font); font-size: 20px; font-weight: 800; color: #fff; }
+    .daae-title span { color: var(--a2); }
+    .daae-sub { font-size: 11px; color: rgba(255,255,255,.5); margin-top: 2px; }
+    .daae-back {
+      display: inline-flex; align-items: center; gap: 6px;
+      background: rgba(255,255,255,.12); border: none; color: #fff;
+      font-size: 12px; font-weight: 600; padding: 7px 14px;
+      border-radius: 20px; cursor: pointer; font-family: var(--body); text-decoration: none;
+    }
+    .daae-back:hover { background: rgba(255,255,255,.2); }
+
+    /* ── Body ── */
+    .daae-body { max-width: 900px; margin: 0 auto; padding: 28px 20px; }
+
+    /* ── Resumo de status ── */
+    .status-grid {
+      display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 24px;
+    }
+    @media (max-width: 600px) { .status-grid { grid-template-columns: 1fr 1fr; } }
+    .status-card {
+      background: var(--bg); border-radius: 16px; padding: 16px;
+      box-shadow: 0 2px 10px rgba(0,50,120,.07);
+      border-left: 4px solid transparent;
+    }
+    .status-card.ok     { border-left-color: var(--ok); }
+    .status-card.warn   { border-left-color: var(--warn); }
+    .status-card.crit   { border-left-color: var(--err); }
+    .status-label { font-size: 10px; font-weight: 700; color: var(--txt3); text-transform: uppercase; letter-spacing: .06em; margin-bottom: 6px; }
+    .status-valor { font-family: var(--font); font-size: 28px; font-weight: 800; color: var(--txt); letter-spacing: -1px; }
+    .status-valor.crit { color: var(--err); }
+    .status-valor.warn { color: var(--warn); }
+    .status-valor.ok   { color: var(--ok); }
+    .status-sub { font-size: 11px; color: var(--txt2); margin-top: 4px; }
+
+    /* ── Alertas críticos ── */
+    .section-title {
+      font-family: var(--font); font-size: 15px; font-weight: 800;
+      color: var(--txt); margin-bottom: 12px;
+      display: flex; align-items: center; gap: 8px;
+    }
+    .alerta-card {
+      background: var(--bg); border-radius: 16px; padding: 16px 18px;
+      margin-bottom: 10px; box-shadow: 0 2px 8px rgba(0,50,120,.06);
+      border-left: 4px solid transparent;
+      display: flex; align-items: flex-start; gap: 14px;
+    }
+    .alerta-card.critico { border-left-color: var(--err); background: var(--errl); }
+    .alerta-card.atencao { border-left-color: var(--warn); background: var(--warnl); }
+    .alerta-icon { font-size: 22px; flex-shrink: 0; margin-top: 2px; }
+    .alerta-titulo { font-size: 13px; font-weight: 700; color: var(--txt); }
+    .alerta-msg { font-size: 12px; color: var(--txt2); margin-top: 3px; line-height: 1.5; }
+    .alerta-grupo { font-size: 10px; color: var(--txt3); margin-top: 4px; font-weight: 600; }
+    .alerta-empty {
+      background: var(--okl); border-radius: 16px; padding: 20px;
+      text-align: center; color: var(--ok); font-size: 14px; font-weight: 700;
+    }
+
+    /* ── Zonas compactas ── */
+    .zonas-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-bottom: 24px; }
+    @media (max-width: 600px) { .zonas-grid { grid-template-columns: 1fr 1fr; } }
+    .zona-mini {
+      background: var(--bg); border-radius: 14px; padding: 14px;
+      box-shadow: 0 1px 6px rgba(0,50,120,.06); border-left: 3px solid transparent;
+    }
+    .zona-mini.normal  { border-left-color: var(--ok); }
+    .zona-mini.atencao { border-left-color: var(--warn); }
+    .zona-mini.critico { border-left-color: var(--err); background: var(--errl); }
+    .zona-mini-nome { font-size: 11px; font-weight: 700; color: var(--txt); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .zona-mini-val  { font-family: var(--font); font-size: 18px; font-weight: 800; letter-spacing: -.5px; margin-top: 4px; }
+    .zona-mini.normal  .zona-mini-val { color: var(--ok); }
+    .zona-mini.atencao .zona-mini-val { color: var(--warn); }
+    .zona-mini.critico .zona-mini-val { color: var(--err); }
+    .zona-mini-tipo { font-size: 9px; color: var(--txt3); margin-top: 2px; text-transform: capitalize; }
+
+    /* ── Card acesso G5 ── */
+    .g5-card {
+      background: linear-gradient(135deg, var(--w2), var(--w4));
+      border-radius: 20px; padding: 28px;
+      display: flex; flex-direction: column; gap: 16px;
+      margin-bottom: 24px;
+    }
+    .g5-title { font-family: var(--font); font-size: 18px; font-weight: 800; color: #fff; }
+    .g5-desc  { font-size: 13px; color: rgba(255,255,255,.65); line-height: 1.6; }
+    .g5-input-row { display: flex; gap: 10px; }
+    .g5-input {
+      flex: 1; padding: 11px 16px; border: 1.5px solid rgba(255,255,255,.2);
+      border-radius: 12px; background: rgba(255,255,255,.1); color: #fff;
+      font-size: 13px; font-family: var(--body); outline: none;
+    }
+    .g5-input::placeholder { color: rgba(255,255,255,.35); }
+    .g5-input:focus { border-color: var(--a2); }
+    .g5-btn {
+      padding: 11px 22px; background: #fff; color: var(--w2);
+      border: none; border-radius: 12px; font-size: 13px; font-weight: 800;
+      font-family: var(--font); cursor: pointer; white-space: nowrap;
+      transition: opacity .15s;
+    }
+    .g5-btn:hover { opacity: .88; }
+    .g5-frame-wrap {
+      background: rgba(0,0,0,.2); border-radius: 14px; overflow: hidden;
+      min-height: 400px; display: none;
+    }
+    .g5-frame-wrap iframe { width: 100%; min-height: 400px; border: none; display: block; }
+    .g5-placeholder {
+      min-height: 120px; display: flex; flex-direction: column;
+      align-items: center; justify-content: center; gap: 8px;
+      color: rgba(255,255,255,.4); font-size: 13px; text-align: center;
+    }
+
+    /* Loading */
+    @keyframes shimmer { 0%{background-position:200% 0} 100%{background-position:-200% 0} }
+    .shimmer {
+      background: linear-gradient(90deg, #e8f4fb 25%, #d0eaf7 50%, #e8f4fb 75%);
+      background-size: 200% 100%; animation: shimmer 1.4s infinite;
+      border-radius: 12px;
+    }
+    @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.4} }
+    .live-dot { width:8px;height:8px;border-radius:50%;background:var(--ok);display:inline-block;animation:pulse 1.5s infinite;margin-right:4px; }
+  </style>
+</head>
+<body>
+
+  <!-- ── LOGIN SCREEN ── -->
+  <div id="daae-login-screen" style="
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+    min-height:100vh; padding:24px;
+    background: linear-gradient(145deg, #e8f4fb 0%, #cce6f7 50%, #b8dcf2 100%);
+  ">
+    <div style="background:#fff;border-radius:24px;padding:40px 36px;width:100%;max-width:400px;box-shadow:0 8px 40px rgba(0,50,120,.12)">
+      <!-- Logo -->
+      <div style="text-align:center;margin-bottom:28px">
+        <svg width="52" height="58" viewBox="0 0 160 180" fill="none" style="margin-bottom:10px">
+          <defs>
+            <linearGradient id="dlg" x1="40" y1="10" x2="130" y2="170" gradientUnits="userSpaceOnUse">
+              <stop offset="0%" stop-color="#48CAE4"/><stop offset="100%" stop-color="#03045E"/>
+            </linearGradient>
+          </defs>
+          <path d="M80 8C80 8 22 72 22 112C22 145 48 168 80 168C112 168 138 145 138 112C138 72 80 8 80 8Z" fill="url(#dlg)"/>
+          <line x1="80" y1="140" x2="80" y2="100" stroke="white" stroke-width="8" stroke-linecap="round"/>
+          <line x1="80" y1="118" x2="58" y2="118" stroke="white" stroke-width="8" stroke-linecap="round"/>
+          <line x1="58" y1="118" x2="58" y2="96" stroke="white" stroke-width="8" stroke-linecap="round"/>
+          <line x1="80" y1="110" x2="102" y2="110" stroke="white" stroke-width="8" stroke-linecap="round"/>
+          <line x1="102" y1="110" x2="102" y2="90" stroke="white" stroke-width="8" stroke-linecap="round"/>
+          <circle cx="58" cy="94" r="10" fill="white"/><circle cx="102" cy="88" r="10" fill="white"/><circle cx="80" cy="80" r="10" fill="white"/>
+        </svg>
+        <div style="font-family:var(--font);font-size:26px;font-weight:800;color:var(--w3);letter-spacing:-1px">Smart<span style="color:var(--w1)">Water</span></div>
+        <div style="font-size:12px;color:var(--txt2);margin-top:4px">Acesso DAAE — Operadores</div>
+      </div>
+
+      <!-- Form -->
+      <div style="display:flex;flex-direction:column;gap:14px">
+        <div>
+          <label style="font-size:11px;font-weight:700;color:var(--txt2);letter-spacing:.06em;text-transform:uppercase;display:block;margin-bottom:7px">E-mail</label>
+          <input id="daae-email" type="email" placeholder="operador@daae.com.br"
+            style="width:100%;height:50px;border:1.5px solid var(--bd);border-radius:14px;background:var(--bg2);color:var(--txt);font-size:15px;padding:0 16px;font-family:var(--body);outline:none"
+            onkeydown="if(event.key==='Enter')document.getElementById('daae-senha').focus()">
+        </div>
+        <div>
+          <label style="font-size:11px;font-weight:700;color:var(--txt2);letter-spacing:.06em;text-transform:uppercase;display:block;margin-bottom:7px">Senha</label>
+          <input id="daae-senha" type="password" placeholder="••••••••"
+            style="width:100%;height:50px;border:1.5px solid var(--bd);border-radius:14px;background:var(--bg2);color:var(--txt);font-size:15px;padding:0 16px;font-family:var(--body);outline:none"
+            onkeydown="if(event.key==='Enter')daaeFazerLogin()">
+        </div>
+        <div id="daae-login-err" style="display:none;background:var(--errl);border:1.5px solid var(--err);border-radius:12px;padding:10px 14px;font-size:12px;font-weight:600;color:var(--err)">
+          E-mail ou senha incorretos
+        </div>
+        <button onclick="daaeFazerLogin()" style="
+          width:100%;height:52px;background:var(--w2);color:#fff;border:none;
+          border-radius:14px;font-size:15px;font-weight:700;cursor:pointer;
+          font-family:var(--font);transition:opacity .15s
+        " onmouseover="this.style.opacity='.88'" onmouseout="this.style.opacity='1'">
+          Entrar no DAAE →
+        </button>
+        <div style="text-align:center">
+          <a href="./index.html" style="font-size:12px;color:var(--txt3);text-decoration:none">← Voltar ao início</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── DASHBOARD (oculto até login) ── -->
+  <div id="daae-dashboard" style="display:none">
+
+  <!-- Header -->
+  <div class="daae-header">
+    <div class="daae-logo">
+      <svg width="28" height="32" viewBox="0 0 160 180" fill="none">
+        <path d="M80 8C80 8 22 72 22 112C22 145 48 168 80 168C112 168 138 145 138 112C138 72 80 8 80 8Z" fill="rgba(255,255,255,0.25)"/>
+        <line x1="80" y1="140" x2="80" y2="100" stroke="white" stroke-width="9" stroke-linecap="round"/>
+        <line x1="80" y1="118" x2="58" y2="118" stroke="white" stroke-width="9" stroke-linecap="round"/>
+        <line x1="58" y1="118" x2="58" y2="96" stroke="white" stroke-width="9" stroke-linecap="round"/>
+        <line x1="80" y1="110" x2="102" y2="110" stroke="white" stroke-width="9" stroke-linecap="round"/>
+        <line x1="102" y1="110" x2="102" y2="90" stroke="white" stroke-width="9" stroke-linecap="round"/>
+        <circle cx="58" cy="94" r="11" fill="white"/><circle cx="102" cy="88" r="11" fill="white"/><circle cx="80" cy="80" r="11" fill="white"/>
+      </svg>
+      <div>
+        <div class="daae-title">Smart<span>Water</span> <span style="font-size:13px;opacity:.6">· DAAE</span></div>
+        <div class="daae-sub"><span class="live-dot"></span>Monitoramento da rede — Araraquara</div>
+      </div>
+    </div>
+    <div style="display:flex;gap:8px;align-items:center">
+      <a href="./index.html" class="daae-back">← Início</a>
+      <button onclick="daaeLogout()" class="daae-back" style="cursor:pointer;border:none">Sair</button>
+    </div>
+  </div>
+
+  <!-- Body -->
+  <div class="daae-body">
+
+    <!-- Resumo de status -->
+    <div class="status-grid" id="status-grid">
+      <div class="shimmer" style="height:88px"></div>
+      <div class="shimmer" style="height:88px"></div>
+      <div class="shimmer" style="height:88px"></div>
+      <div class="shimmer" style="height:88px"></div>
+    </div>
+
+    <!-- Alertas críticos -->
+    <div class="section-title">🚨 Alertas ativos</div>
+    <div id="alertas-list" style="margin-bottom:24px">
+      <div class="shimmer" style="height:70px;margin-bottom:10px"></div>
+    </div>
+
+    <!-- Zonas compactas -->
+    <div class="section-title">📍 Status das zonas</div>
+    <div class="zonas-grid" id="zonas-grid">
+      <div class="shimmer" style="height:76px"></div>
+      <div class="shimmer" style="height:76px"></div>
+      <div class="shimmer" style="height:76px"></div>
+    </div>
+
+    <div class="section-title">🏗️ Reservatórios</div>
+    <div class="zonas-grid" id="reservatorios-grid" style="margin-bottom:24px">
+      <div class="shimmer" style="height:76px"></div>
+      <div class="shimmer" style="height:76px"></div>
+      <div class="shimmer" style="height:76px"></div>
+    </div>
+
+    <div class="section-title">⚙️ Equipamentos e sensores</div>
+    <div id="equipamentos-list" style="margin-bottom:24px">
+      <div class="shimmer" style="height:76px;margin-bottom:10px"></div>
+    </div>
+
+    <div class="section-title">📦 Dados recebidos por JSON</div>
+    <div id="json-resumo" style="margin-bottom:24px">
+      <div class="shimmer" style="height:110px"></div>
+    </div>
+
+    <!-- Acesso Painel Operacional G5 -->
+    <div class="g5-card">
+      <div>
+        <div class="g5-title">📊 Painel Operacional Completo</div>
+        <div class="g5-desc">
+          Para operação avançada da rede — acesse o painel operacional externo.<br>
+          Cole a URL do painel abaixo para acessar diretamente.
+        </div>
+      </div>
+      <div class="g5-input-row">
+        <input class="g5-input" id="g5-url" type="url" placeholder="https://dashboard-grupo5.vercel.app">
+        <button class="g5-btn" onclick="abrirG5()">Acessar →</button>
+      </div>
+      <div id="g5-frame" class="g5-frame-wrap">
+        <iframe id="g5-iframe" src="" title="Painel Operacional Externo" sandbox="allow-scripts allow-same-origin allow-forms"></iframe>
+      </div>
+      <div class="g5-placeholder" id="g5-placeholder">
+        🏛️ Painel operacional externo<br>
+        <span style="font-size:11px">Informe a URL acima para acessar</span>
+      </div>
+    </div>
+
+    <div style="text-align:center;font-size:11px;color:var(--txt3);padding-bottom:24px">
+      SmartWater · Acesso DAAE · Grupo 6 — Eng. Computação
+    </div>
+  </div><!-- /daae-body -->
+  </div><!-- /daae-dashboard -->
+
+<script>
+// ── Auth DAAE ──────────────────────────────────────────
+const DAAE_TOKEN_KEY = 'sw_daae_token';
+const DAAE_PERFIL_KEY = 'sw_daae_perfil';
+
+function getDaaeToken() { return localStorage.getItem(DAAE_TOKEN_KEY); }
+
+function verificarAcesso() {
+  const token = getDaaeToken();
+  const perfil = localStorage.getItem(DAAE_PERFIL_KEY);
+  if (token && perfil === 'operador') {
+    document.getElementById('daae-login-screen').style.display = 'none';
+    document.getElementById('daae-dashboard').style.display = 'block';
+    carregarDados();
+  }
+}
+
+async function daaeFazerLogin() {
+  const email = document.getElementById('daae-email').value.trim();
+  const senha = document.getElementById('daae-senha').value;
+  const errEl = document.getElementById('daae-login-err');
+  errEl.style.display = 'none';
+
+  if (!email || !senha) { errEl.style.display = 'block'; errEl.textContent = 'Preencha e-mail e senha'; return; }
+
+  try {
+    const r = await fetch('/api/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ usuario: email, senha })
+    });
+    const d = await r.json();
+
+    if (!r.ok || !d.token) {
+      errEl.style.display = 'block';
+      errEl.textContent = d.erro || 'E-mail ou senha incorretos';
+      return;
+    }
+
+    const perfil = d.usuario?.perfil || '';
+    if (perfil !== 'operador') {
+      errEl.style.display = 'block';
+      errEl.textContent = 'Este acesso é exclusivo para operadores DAAE';
+      return;
+    }
+
+    localStorage.setItem(DAAE_TOKEN_KEY, d.token);
+    localStorage.setItem(DAAE_PERFIL_KEY, perfil);
+    document.getElementById('daae-login-screen').style.display = 'none';
+    document.getElementById('daae-dashboard').style.display = 'block';
+    carregarDados();
+  } catch(e) {
+    errEl.style.display = 'block';
+    errEl.textContent = 'Erro de conexão — verifique se o servidor está rodando';
+  }
+}
+
+function daaeLogout() {
+  localStorage.removeItem(DAAE_TOKEN_KEY);
+  localStorage.removeItem(DAAE_PERFIL_KEY);
+  location.reload();
+}
+
+// Verificar acesso ao carregar a página
+verificarAcesso();
+
+// ── Dashboard ──────────────────────────────────────────
+function daaeHeaders() {
+  const t = getDaaeToken();
+  return t ? { 'Authorization': 'Bearer ' + t } : {};
+}
+
+async function carregarDados() {
+  try {
+    const h = daaeHeaders();
+    const [dashRes, alertRes, integracaoRes] = await Promise.all([
+      fetch('/api/cidade/dashboard', { headers: h }).then(r=>r.json()).catch(()=>null),
+      fetch('/api/cidade/alertas').then(r=>r.json()).catch(()=>null),
+      fetch('/api/integracao/resumo-daae', { headers: h }).then(r=>r.json()).catch(()=>null),
+    ]);
+    if (dashRes) renderStatus(dashRes.resumo, dashRes.zonas);
+    if (alertRes) renderAlertas(alertRes.alertas || []);
+    if (integracaoRes) renderIntegracao(integracaoRes);
+  } catch(e) {
+    document.getElementById('status-grid').innerHTML = '<div style="color:var(--txt2);font-size:13px;grid-column:1/-1;padding:16px">Backend offline — inicie com <code>python app.py</code></div>';
+    document.getElementById('alertas-list').innerHTML = '';
+    document.getElementById('zonas-grid').innerHTML = '';
+    document.getElementById('reservatorios-grid').innerHTML = '';
+    document.getElementById('equipamentos-list').innerHTML = '';
+    document.getElementById('json-resumo').innerHTML = '';
+  }
+}
+
+function renderStatus(r, zonas) {
+  if (!r) return;
+  const cor = n => n === 0 ? 'ok' : (n <= 2 ? 'warn' : 'crit');
+  const perda = r.perda_total_pct || 0;
+  const corPerda = perda > 10 ? 'crit' : perda > 5 ? 'warn' : 'ok';
+
+  document.getElementById('status-grid').innerHTML = `
+    <div class="status-card ${r.zonas_criticas > 0 ? 'crit' : 'ok'}">
+      <div class="status-label">Alertas críticos</div>
+      <div class="status-valor ${r.zonas_criticas > 0 ? 'crit' : 'ok'}">${r.zonas_criticas}</div>
+      <div class="status-sub">${r.zonas_atencao} em atenção</div>
+    </div>
+    <div class="status-card ${corPerda}">
+      <div class="status-label">Perda total</div>
+      <div class="status-valor ${corPerda}">${perda}%</div>
+      <div class="status-sub">na rede da cidade</div>
+    </div>
+    <div class="status-card ok">
+      <div class="status-label">Zonas monitoradas</div>
+      <div class="status-valor">${r.total_zonas}</div>
+      <div class="status-sub">na rede DAAE</div>
+    </div>
+    <div class="status-card ok">
+      <div class="status-label">Vazão entrada</div>
+      <div class="status-valor" style="font-size:20px">${r.vazao_total_entrada_ls}</div>
+      <div class="status-sub">L/s na rede</div>
+    </div>`;
+
+  // Zonas
+  const icone = { captacao:'💧', reservatorio:'🏗️', distribuicao:'🌐' };
+  document.getElementById('zonas-grid').innerHTML = (zonas||[]).map(z => `
+    <div class="zona-mini ${z.status_geral}">
+      <div class="zona-mini-nome">${icone[z.tipo]||'🔵'} ${z.nome}</div>
+      <div class="zona-mini-val">${(z.pressao_mmh2o/1000).toFixed(1)}k</div>
+      <div class="zona-mini-tipo">${z.tipo} · perda ${z.perda_pct}%</div>
+    </div>`).join('') || '<div style="color:var(--txt2);font-size:12px">Sem dados</div>';
+}
+
+function renderAlertas(alertas) {
+  const el = document.getElementById('alertas-list');
+  if (!alertas.length) {
+    el.innerHTML = '<div class="alerta-empty">✅ Nenhum alerta crítico ativo na rede</div>';
+    return;
+  }
+  el.innerHTML = alertas.map(a => `
+    <div class="alerta-card ${a.nivel}">
+      <div class="alerta-icon">${a.tipo === 'pressao_critica' ? '🚨' : a.tipo === 'pressao_baixa' ? '⚠️' : '💧'}</div>
+      <div>
+        <div class="alerta-titulo">${a.zona}</div>
+        <div class="alerta-msg">${a.mensagem}</div>
+        <div class="alerta-grupo">${a.grupo}</div>
+      </div>
+    </div>`).join('');
+}
+
+function renderIntegracao(data) {
+  const equipamentos = data.equipamentos || [];
+  const reservatorios = data.reservatorios || [];
+  const leituras = data.leituras_rede || [];
+  const resumo = data.resumo || {};
+  const origem = data.origem || {};
+  const resEl = document.getElementById('reservatorios-grid');
+  const eqEl = document.getElementById('equipamentos-list');
+  const jsonEl = document.getElementById('json-resumo');
+
+  if (resEl) {
+    const icones = { enterrado:'⬇️', semi_enterrado:'◐', apoiado:'▰', elevado:'⬆️' };
+    resEl.innerHTML = reservatorios.map(r => `
+      <div class="zona-mini ${r.status === 'critico' ? 'critico' : r.status === 'atencao' ? 'atencao' : 'normal'}">
+        <div class="zona-mini-nome">${icones[r.tipo] || '🏗️'} ${r.nome}</div>
+        <div class="zona-mini-val">${r.nivel_pct}%</div>
+        <div class="zona-mini-tipo">${r.tipo.replace('_', '-')} · ${(r.capacidade_l / 1000).toFixed(0)} mil L · ${(r.pressao_saida_mmh2o / 1000).toFixed(1)}k mmH2O</div>
+      </div>`).join('') || '<div style="color:var(--txt2);font-size:12px">Sem reservatórios no JSON</div>';
+  }
+
+  if (eqEl) {
+    eqEl.innerHTML = equipamentos.map(eq => {
+      const isBomba = eq.tipo === 'bomba_submersa';
+      const status = (eq.status || '').toLowerCase();
+      const nivel = status.includes('atenc') ? 'atencao' : status.includes('inativo') ? 'critico' : 'normal';
+      const detalhe = [
+        eq.localizacao,
+        eq.protocolo,
+        eq.reservatorio_id ? `Reservatório: ${eq.reservatorio_id}` : null,
+        eq.pressao_mmh2o ? `${eq.pressao_mmh2o} mmH2O` : null,
+        eq.vazao_ls ? `${eq.vazao_ls} L/s` : null,
+        eq.nivel_pct ? `${eq.nivel_pct}% nivel` : null,
+        eq.temperatura_c ? `${eq.temperatura_c} °C` : null,
+      ].filter(Boolean).join(' · ');
+
+      return `
+        <div class="alerta-card ${nivel}" style="background:${isBomba ? 'var(--warnl)' : 'var(--bg)'}">
+          <div class="alerta-icon">${isBomba || eq.tipo?.includes('bomba') ? '⚙️' : eq.tipo === 'pressao' ? '📊' : eq.tipo === 'nivel' ? '📏' : '💧'}</div>
+          <div style="flex:1">
+            <div class="alerta-titulo">${eq.nome}</div>
+            <div class="alerta-msg">${detalhe}</div>
+            <div class="alerta-grupo">Tipo: ${eq.tipo || 'sensor'} · Status: ${eq.status || 'Ativo'} · Bateria: ${eq.bateria_pct ?? '—'}%</div>
+          </div>
+        </div>`;
+    }).join('') || '<div class="alerta-empty">Nenhum equipamento recebido no JSON</div>';
+  }
+
+  if (jsonEl) {
+    const leituraRows = leituras.map(l => `
+      <div class="zona-mini ${l.status === 'critico' ? 'critico' : l.status === 'atencao' ? 'atencao' : 'normal'}">
+        <div class="zona-mini-nome">📍 ${l.zona}</div>
+        <div class="zona-mini-val">${(l.pressao_mmh2o / 1000).toFixed(1)}k</div>
+        <div class="zona-mini-tipo">E:${l.vazao_entrada_ls} L/s · S:${l.vazao_saida_ls} L/s · perda ${l.perda_pct}%</div>
+      </div>`).join('');
+
+    jsonEl.innerHTML = `
+      <div class="status-grid" style="margin-bottom:14px">
+        <div class="status-card ok">
+          <div class="status-label">Origem JSON</div>
+          <div class="status-valor" style="font-size:16px">${origem.formato_entrega || 'json'}</div>
+          <div class="status-sub">${origem.grupo || 'grupos externos'}</div>
+        </div>
+        <div class="status-card ${resumo.alertas_criticos > 0 ? 'crit' : 'ok'}">
+          <div class="status-label">Alertas críticos</div>
+          <div class="status-valor ${resumo.alertas_criticos > 0 ? 'crit' : 'ok'}">${resumo.alertas_criticos || 0}</div>
+          <div class="status-sub">do JSON consolidado</div>
+        </div>
+        <div class="status-card ok">
+          <div class="status-label">Reservatórios</div>
+          <div class="status-valor">${resumo.reservatorios_monitorados || reservatorios.length}</div>
+          <div class="status-sub">enterrado, semi, apoiado e elevado</div>
+        </div>
+        <div class="status-card ok">
+          <div class="status-label">Equipamentos</div>
+          <div class="status-valor">${resumo.equipamentos_monitorados || equipamentos.length}</div>
+          <div class="status-sub">sensores + bomba</div>
+        </div>
+        <div class="status-card warn">
+          <div class="status-label">Atualização</div>
+          <div class="status-valor" style="font-size:14px">${(data.atualizado_em || '').slice(0, 16).replace('T', ' ')}</div>
+          <div class="status-sub">último pacote recebido</div>
+        </div>
+      </div>
+      <div class="zonas-grid">${leituraRows}</div>`;
+  }
+}
+
+function abrirG5() {
+  const url = document.getElementById('g5-url').value.trim();
+  if (!url) return;
+  localStorage.setItem('sw_g5_url', url);
+  document.getElementById('g5-frame').style.display = 'block';
+  document.getElementById('g5-placeholder').style.display = 'none';
+  document.getElementById('g5-iframe').src = url;
+}
+
+// Restaurar URL salva do G5
+(function() {
+  const saved = localStorage.getItem('sw_g5_url');
+  if (saved) {
+    document.getElementById('g5-url').value = saved;
+    abrirG5();
+  }
+})();
+
+carregarDados();
+setInterval(carregarDados, 30000);
+</script>
+</body>
+</html>

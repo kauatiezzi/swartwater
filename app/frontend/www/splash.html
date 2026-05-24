@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>SmartWater — Condomínio</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./styles.css">
+  <style>
+    @media (min-width: 1024px) {
+      html, body { height: 100vh; padding: 0 !important; overflow: hidden; }
+      body {
+        flex-direction: row !important; align-items: stretch !important;
+        justify-content: flex-start !important;
+        background: linear-gradient(135deg, var(--w2) 0%, var(--w4) 100%) !important;
+      }
+      .shell {
+        width: 100% !important; height: 100vh !important;
+        min-height: unset !important; border-radius: 0 !important;
+        box-shadow: none !important; max-height: none !important; overflow: hidden !important;
+      }
+      .splash { flex-direction: row; height: 100vh; }
+      .splash-top {
+        flex: 1; background: transparent;
+        padding: 80px 80px; align-items: flex-start; justify-content: center;
+      }
+      .splash-circle-bg { width: 520px; height: 520px; opacity: 0.08; left: 40%; }
+      .app-name { font-size: 58px; letter-spacing: -2px; color: #fff; }
+      .app-name span { color: var(--a2); }
+      .app-tagline { font-size: 16px; color: rgba(255,255,255,0.7); text-align: left; }
+      .splash-bottom {
+        width: 420px; min-width: 420px; border-radius: 0;
+        padding: 0 56px; gap: 16px;
+        display: flex; flex-direction: column; justify-content: center;
+        background: #fff;
+      }
+    }
+  </style>
+</head>
+<body>
+<div class="shell" id="app">
+  <div class="splash">
+    <div class="splash-top">
+      <div class="splash-circle-bg"></div>
+      <svg width="160" height="180" viewBox="0 0 160 180" fill="none" xmlns="http://www.w3.org/2000/svg" style="position:relative;z-index:1;filter:drop-shadow(0 8px 24px rgba(0,119,182,0.28))">
+        <defs>
+          <linearGradient id="dg1" x1="40" y1="10" x2="130" y2="170" gradientUnits="userSpaceOnUse"><stop offset="0%" stop-color="#48CAE4"/><stop offset="45%" stop-color="#0096C7"/><stop offset="100%" stop-color="#03045E"/></linearGradient>
+          <linearGradient id="lg1" x1="90" y1="60" x2="150" y2="160" gradientUnits="userSpaceOnUse"><stop offset="0%" stop-color="#90E0EF"/><stop offset="100%" stop-color="#0077B6"/></linearGradient>
+          <linearGradient id="sh1" x1="55" y1="30" x2="90" y2="90" gradientUnits="userSpaceOnUse"><stop offset="0%" stop-color="#fff" stop-opacity="0.45"/><stop offset="100%" stop-color="#fff" stop-opacity="0"/></linearGradient>
+          <clipPath id="dc1"><path d="M80 8C80 8 22 72 22 112C22 145 48 168 80 168C112 168 138 145 138 112C138 72 80 8 80 8Z"/></clipPath>
+        </defs>
+        <ellipse cx="80" cy="172" rx="38" ry="6" fill="rgba(0,50,120,0.13)"/>
+        <path d="M80 8C80 8 22 72 22 112C22 145 48 168 80 168C112 168 138 145 138 112C138 72 80 8 80 8Z" fill="url(#dg1)"/>
+        <path d="M80 8C80 8 22 72 22 112C22 145 48 168 80 168C112 168 138 145 138 112C138 72 80 8 80 8Z" fill="url(#sh1)"/>
+        <path d="M138 112C138 72 80 8 80 8C80 8 108 58 118 95C128 130 118 158 100 166C118 158 138 138 138 112Z" fill="url(#lg1)" opacity="0.7" clip-path="url(#dc1)"/>
+        <line x1="80" y1="140" x2="80" y2="100" stroke="white" stroke-width="2.2" stroke-linecap="round"/>
+        <line x1="80" y1="118" x2="58" y2="118" stroke="white" stroke-width="2.2" stroke-linecap="round"/>
+        <line x1="58" y1="118" x2="58" y2="96" stroke="white" stroke-width="2.2" stroke-linecap="round"/>
+        <line x1="80" y1="110" x2="102" y2="110" stroke="white" stroke-width="2.2" stroke-linecap="round"/>
+        <line x1="102" y1="110" x2="102" y2="90" stroke="white" stroke-width="2.2" stroke-linecap="round"/>
+        <line x1="80" y1="100" x2="80" y2="82" stroke="white" stroke-width="2.2" stroke-linecap="round"/>
+        <circle cx="58" cy="94" r="7" fill="white"/><circle cx="58" cy="94" r="4" fill="#0096C7"/>
+        <circle cx="102" cy="88" r="7" fill="white"/><circle cx="102" cy="88" r="4" fill="#0096C7"/>
+        <circle cx="80" cy="80" r="7" fill="white"/><circle cx="80" cy="80" r="4" fill="#48CAE4"/>
+        <circle cx="148" cy="75" r="5" fill="#90E0EF" opacity="0.7"/>
+        <circle cx="10" cy="88" r="4" fill="#90E0EF" opacity="0.6"/>
+      </svg>
+      <div class="app-name">Smart<span>Water</span></div>
+      <div class="app-tagline">Monitoramento inteligente de consumo</div>
+    </div>
+    <div class="splash-bottom">
+      <button class="btn-primary" onclick="window.location.href='login.html'">Entrar na conta</button>
+      <button class="btn-outline" onclick="window.location.href='cadastro.html'">Criar minha conta</button>
+      <div style="text-align:center;margin-top:4px;font-size:11px;color:var(--txt2)">v2.0 · Monitoramento residencial</div>
+      <div style="text-align:center;margin-top:2px">
+        <a href="./index.html" style="font-size:11px;color:var(--txt3);text-decoration:none">← Voltar ao início</a>
+      </div>
+    </div>
+  </div>
+</div>
+<script src="./js/api.js"></script>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    if (isLoggedIn()) window.location.replace('app.html');
+  });
+</script>
+</body>
+</html>
