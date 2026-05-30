@@ -1,0 +1,1018 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SmartWater App — Grupo 6</title>
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/plugin/highlight/monokai.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+
+<style>
+:root{
+  --navy:#03045E; --navy2:#072158; --ciano:#00B4D8; --azul:#0077B6; --azul3:#023E8A;
+  --verde:#06D6A0; --amarelo:#FFB703; --vermelho:#EF233C; --claro:#CAF0F8;
+  --ink:#E8F1FA; --muted:#8FA6C4; --glass:rgba(255,255,255,.06); --glassbrd:rgba(255,255,255,.14);
+}
+
+/* ---------- base ---------- */
+.reveal{ font-family:'Plus Jakarta Sans',sans-serif; font-size:30px; color:var(--ink); }
+.reveal .slides{ text-align:left; }
+.reveal h1,.reveal h2,.reveal h3,.reveal h4{ font-family:'Plus Jakarta Sans',sans-serif; font-weight:800; letter-spacing:-.02em; text-transform:none; line-height:1.05; margin:0 0 .35em; }
+.reveal h1{ font-size:2.6em; } .reveal h2{ font-size:1.7em; } .reveal h3{ font-size:1.15em; }
+.reveal p{ line-height:1.45; }
+.reveal section{ top:0 !important; }
+.reveal ::selection{ background:var(--ciano); color:#001; }
+
+/* ---------- animated background ---------- */
+.reveal-viewport{
+  background:
+    radial-gradient(1200px 700px at 12% -8%, rgba(0,180,216,.22), transparent 60%),
+    radial-gradient(1000px 700px at 110% 12%, rgba(6,214,160,.16), transparent 55%),
+    radial-gradient(900px 800px at 50% 120%, rgba(0,119,182,.20), transparent 60%),
+    linear-gradient(160deg,#020325 0%,#041038 45%,#03113f 100%);
+  background-attachment:fixed;
+}
+.bgfx{ position:fixed; inset:0; pointer-events:none; z-index:0;
+  background:radial-gradient(2px 2px at 20% 30%,rgba(255,255,255,.35),transparent),
+            radial-gradient(2px 2px at 70% 60%,rgba(255,255,255,.25),transparent),
+            radial-gradient(1.5px 1.5px at 40% 80%,rgba(255,255,255,.2),transparent),
+            radial-gradient(1.5px 1.5px at 85% 25%,rgba(255,255,255,.25),transparent);
+  background-size:cover; opacity:.5; animation:floaty 18s ease-in-out infinite alternate; }
+@keyframes floaty{ from{transform:translateY(0)} to{transform:translateY(-22px)} }
+
+/* ---------- helpers ---------- */
+.grad{ background:linear-gradient(100deg,var(--ciano),var(--verde)); -webkit-background-clip:text; background-clip:text; color:transparent; }
+.grad2{ background:linear-gradient(100deg,#7ee8ff,var(--ciano) 55%,var(--azul)); -webkit-background-clip:text; background-clip:text; color:transparent; }
+.kicker{ display:inline-flex; align-items:center; gap:.5em; font-size:.5em; font-weight:700; letter-spacing:.18em; text-transform:uppercase;
+  color:var(--ciano); background:rgba(0,180,216,.10); border:1px solid rgba(0,180,216,.35); padding:.45em 1em; border-radius:999px; }
+.muted{ color:var(--muted); }
+.center{ text-align:center; }
+.who{ position:absolute; top:34px; right:46px; font-size:.5em; font-weight:700; color:#001; background:linear-gradient(100deg,var(--ciano),var(--verde));
+  padding:.5em 1.1em; border-radius:999px; box-shadow:0 8px 30px rgba(0,180,216,.4); z-index:5; }
+
+.card{ background:var(--glass); border:1px solid var(--glassbrd); border-radius:22px; padding:.95em 1.05em; backdrop-filter:blur(14px);
+  box-shadow:0 18px 50px rgba(0,0,0,.35); }
+.card h3{ font-size:.92em; margin-bottom:.3em; }
+.card p{ font-size:.62em; color:#cdddf0; line-height:1.4; margin:0; }
+.ic{ font-size:1.4em; line-height:1; display:block; margin-bottom:.25em; }
+
+.grid{ display:grid; gap:22px; }
+.g2{ grid-template-columns:1fr 1fr; } .g3{ grid-template-columns:repeat(3,1fr); } .g4{ grid-template-columns:repeat(4,1fr); }
+
+.tag{ display:inline-block; font-family:'JetBrains Mono',monospace; font-size:.5em; font-weight:600; padding:.3em .7em; border-radius:8px;
+  background:rgba(0,180,216,.14); color:#9fe9ff; border:1px solid rgba(0,180,216,.3); margin:.15em .2em 0 0; }
+
+/* code */
+.reveal pre{ width:100%; box-shadow:0 24px 60px rgba(0,0,0,.5); border-radius:16px; border:1px solid rgba(255,255,255,.1); font-size:.5em; margin:0; }
+.reveal pre code{ border-radius:16px; padding:1.1em 1.2em; max-height:none; font-family:'JetBrains Mono',monospace; line-height:1.5; background:#0c1430 !important; }
+.codecap{ font-family:'JetBrains Mono',monospace; font-size:.46em; color:var(--muted); margin:.5em 0 .2em; display:flex; gap:.6em; align-items:center; }
+.codecap::before{ content:''; width:11px;height:11px;border-radius:50%; background:#ff5f57; box-shadow:18px 0 #febc2e,36px 0 #28c840; margin-right:24px; }
+
+/* stat */
+.stat{ font-size:2.2em; font-weight:800; line-height:1; }
+.statbox{ text-align:center; }
+.statbox .lbl{ font-size:.5em; color:var(--muted); margin-top:.4em; }
+
+/* ---------- puzzle pieces ---------- */
+.pieces{ display:flex; gap:14px; justify-content:center; align-items:stretch; }
+.piece{ position:relative; width:150px; height:118px; border-radius:18px; display:flex; flex-direction:column; align-items:center; justify-content:center;
+  background:rgba(255,255,255,.04); border:1.5px dashed rgba(255,255,255,.2); color:var(--muted); transition:all .55s cubic-bezier(.2,.8,.2,1); opacity:.45; }
+.piece .pn{ font-size:.62em; font-weight:800; } .piece .pl{ font-size:.42em; margin-top:.25em; text-align:center; }
+.piece.on{ opacity:1; transform:translateY(-6px) scale(1.03); border-style:solid; color:#fff;
+  background:linear-gradient(160deg,var(--pc,#0077B6),rgba(3,4,94,.6)); border-color:rgba(255,255,255,.5); box-shadow:0 16px 40px var(--pcs,rgba(0,119,182,.45)); }
+.piece.on .chk{ position:absolute; top:8px; right:10px; font-size:.5em; color:var(--verde); }
+
+/* ---------- retrospectiva HUD ---------- */
+#hud{ position:fixed; left:0; right:0; bottom:0; z-index:20; display:none; padding:10px 40px 12px; pointer-events:none;
+  background:linear-gradient(0deg,rgba(2,3,30,.92),transparent); }
+#hud.show{ display:block; }
+#hudbar{ height:7px; border-radius:99px; background:rgba(255,255,255,.1); overflow:hidden; margin-bottom:10px; }
+#hudfill{ height:100%; width:0; border-radius:99px; background:linear-gradient(90deg,var(--ciano),var(--verde)); transition:width .7s cubic-bezier(.2,.8,.2,1); box-shadow:0 0 18px rgba(0,180,216,.7); }
+#hudrow{ display:flex; gap:8px; align-items:center; font-size:13px; color:var(--muted); font-weight:600; }
+.dot{ width:26px;height:10px;border-radius:6px; background:rgba(255,255,255,.14); transition:all .5s; }
+.dot.on{ background:linear-gradient(90deg,var(--ciano),var(--verde)); box-shadow:0 0 12px rgba(0,180,216,.7); }
+
+/* bullets */
+.blist{ list-style:none; margin:0; padding:0; }
+.blist li{ position:relative; padding:.42em 0 .42em 1.5em; font-size:.66em; line-height:1.4; border-bottom:1px solid rgba(255,255,255,.06); }
+.blist li::before{ content:''; position:absolute; left:0; top:.78em; width:12px; height:12px; border-radius:4px; background:linear-gradient(135deg,var(--ciano),var(--verde)); }
+.blist li b{ color:#fff; }
+
+/* intuito (objetivo do grupo) */
+.goal{ background:rgba(0,180,216,.09); border-left:4px solid var(--ciano); border-radius:12px; padding:.55em .85em;
+  font-size:.56em; line-height:1.38; margin:.15em 0 .55em; }
+.goal b{ color:var(--ciano); }
+
+/* glossário */
+.glossgrid{ gap:14px; }
+.glossgrid .card{ padding:.7em .85em; }
+.glossgrid .card h3{ font-size:.6em; color:var(--ciano); margin-bottom:.28em; }
+.glossgrid .card p{ font-size:.5em; line-height:1.4; color:#cfe0f2; }
+
+/* hero capa */
+.hero-badge{ width:118px;height:118px;border-radius:30px; display:flex;align-items:center;justify-content:center; font-size:64px;
+  background:linear-gradient(160deg,rgba(0,180,216,.25),rgba(6,214,160,.15)); border:1px solid var(--glassbrd); box-shadow:0 20px 60px rgba(0,180,216,.35);
+  animation:pulse 3.5s ease-in-out infinite; }
+@keyframes pulse{ 0%,100%{transform:translateY(0)} 50%{transform:translateY(-12px)} }
+
+/* section divider capas */
+.divhero h1{ font-size:3.4em; }
+.divnum{ font-family:'JetBrains Mono',monospace; font-size:1.1em; color:var(--ciano); opacity:.6; font-weight:600; }
+
+/* palette */
+.swatch{ height:130px; border-radius:18px; display:flex; align-items:flex-end; padding:14px; font-family:'JetBrains Mono',monospace; font-weight:600; font-size:.5em;
+  border:1px solid rgba(255,255,255,.12); box-shadow:0 14px 36px rgba(0,0,0,.35); transition:transform .4s; }
+.swatch:hover{ transform:translateY(-6px) scale(1.04); }
+
+/* phone mock */
+.phone{ width:230px; height:460px; border-radius:34px; background:linear-gradient(165deg,#0a1a3f,#061233); border:7px solid #0c1a36;
+  box-shadow:0 30px 70px rgba(0,0,0,.55), inset 0 0 0 1px rgba(255,255,255,.05); padding:16px 14px; position:relative; }
+.phone::before{ content:''; position:absolute; top:12px; left:50%; transform:translateX(-50%); width:80px;height:6px;border-radius:99px; background:rgba(255,255,255,.15); }
+.phscreen{ margin-top:18px; }
+.ring{ width:130px;height:130px;border-radius:50%; margin:8px auto; display:flex;align-items:center;justify-content:center; flex-direction:column;
+  background:conic-gradient(var(--ciano) 0 62%, rgba(255,255,255,.08) 62% 100%); position:relative; }
+.ring::after{ content:''; position:absolute; inset:12px; border-radius:50%; background:#08163a; }
+.ring .v{ position:relative; z-index:2; font-size:.95em; font-weight:800; } .ring .u{ position:relative; z-index:2; font-size:.42em; color:var(--muted); }
+.bar{ height:9px; border-radius:99px; background:rgba(255,255,255,.08); margin:7px 0; overflow:hidden; }
+.bar span{ display:block; height:100%; border-radius:99px; background:linear-gradient(90deg,var(--ciano),var(--verde)); }
+
+/* flow */
+.flow{ display:flex; align-items:center; gap:0; justify-content:center; }
+.fnode{ flex:1; text-align:center; border-radius:16px; padding:.7em .4em; background:var(--glass); border:1px solid var(--glassbrd); }
+.fnode .ft{ font-weight:700; font-size:.6em; } .fnode .fs{ font-size:.42em; color:var(--muted); margin-top:.2em; }
+.farr{ color:var(--ciano); font-size:.8em; padding:0 .25em; opacity:.8; }
+
+/* endpoint rows */
+.ep{ display:flex; align-items:center; gap:12px; background:var(--glass); border:1px solid var(--glassbrd); border-radius:12px; padding:.4em .6em; margin-bottom:9px; }
+.method{ font-family:'JetBrains Mono',monospace; font-weight:700; font-size:.42em; padding:.35em .6em; border-radius:7px; min-width:58px; text-align:center; }
+.m-get{ background:rgba(6,214,160,.18); color:var(--verde); } .m-post{ background:rgba(255,183,3,.18); color:var(--amarelo); } .m-put{ background:rgba(0,180,216,.18); color:var(--ciano); }
+.ep .path{ font-family:'JetBrains Mono',monospace; font-size:.46em; color:#9fe9ff; font-weight:600; } .ep .epd{ font-size:.42em; color:var(--muted); margin-left:auto; }
+
+/* progress steps */
+.steps{ display:flex; gap:14px; } .step{ flex:1; }
+.step .sn{ width:38px;height:38px;border-radius:11px; background:linear-gradient(135deg,var(--ciano),var(--azul)); display:flex;align-items:center;justify-content:center; font-weight:800; font-size:.6em; margin-bottom:.5em; }
+
+/* reveal progress + controls tint */
+.reveal .progress{ color:var(--ciano); height:5px; }
+.reveal .controls{ color:var(--ciano); bottom:38px; right:18px; z-index:50; }
+.reveal .slide-number{ background:rgba(0,0,0,.4); color:var(--muted); font-family:'JetBrains Mono',monospace; }
+
+.fadein{ animation:fadein .8s both; } @keyframes fadein{ from{opacity:0; transform:translateY(14px)} to{opacity:1;transform:none} }
+@keyframes inUp{ from{opacity:0; transform:translateY(22px)} to{opacity:1; transform:none} }
+@keyframes inPiece{ from{opacity:0; transform:translateY(22px) scale(.9)} to{opacity:1; transform:translateY(0) scale(1)} }
+small.note{ font-size:.42em; color:var(--muted); }
+hr.sep{ border:0; height:1px; background:linear-gradient(90deg,transparent,var(--ciano),transparent); margin:.5em 0; opacity:.5; }
+</style>
+</head>
+<body>
+<div class="bgfx"></div>
+
+<!-- Retrospectiva HUD -->
+<div id="hud">
+  <div id="hudbar"><div id="hudfill"></div></div>
+  <div id="hudrow">
+    <span style="color:var(--ciano)">Retrospectiva</span>
+    <span class="dot" data-i="1"></span><span class="dot" data-i="2"></span>
+    <span class="dot" data-i="3"></span><span class="dot" data-i="4"></span>
+    <span class="dot" data-i="5"></span>
+    <span id="hudtxt" style="margin-left:auto"></span>
+  </div>
+</div>
+
+<div class="reveal"><div class="slides">
+
+<!-- 1 · CAPA -->
+<section data-auto-animate data-background-gradient="linear-gradient(160deg,#020325,#04113f)">
+  <div class="center" style="display:flex;flex-direction:column;align-items:center;gap:.4em;margin-top:.2em">
+    <div class="hero-badge">💧</div>
+    <span class="kicker">Grupo 6 · Projeto Integrador</span>
+    <h1 data-id="title" style="font-size:3.6em;margin:.1em 0"><span class="grad2">SmartWater</span></h1>
+    <h2 style="font-size:1.5em;color:#fff;margin:0;letter-spacing:.3em;font-weight:700">A P P</h2>
+    <p style="font-size:.66em;color:var(--claro);max-width:18em;margin:.6em 0 0">Engenharia da Computação aplicada à Gestão Inteligente da Água</p>
+    <p class="muted" style="font-size:.5em;margin-top:1em">Kauã · Bianca · Mariana · Jeferson · Daniel</p>
+    <p class="muted" style="font-size:.4em">Prof. Alexandre Coan Pierri · Fenômenos de Transporte I · UNIARA · 2026</p>
+  </div>
+</section>
+
+<!-- 2 · AGENDA -->
+<section data-auto-animate>
+  <span class="kicker">Roteiro</span>
+  <h2 data-id="title">Agenda <span class="muted" style="font-size:.5em;font-weight:600">· 40–50 min</span></h2>
+  <div class="grid g3" style="margin-top:.6em">
+    <div class="card anim"><span class="tag">01 · Kauã</span><h3>Retrospectiva</h3><p>Os 5 grupos que construíram o sistema — peça por peça.</p></div>
+    <div class="card anim"><span class="tag">02 · Bianca</span><h3>Banco de Dados</h3><p>MySQL, modelagem relacional e integração dos dados.</p></div>
+    <div class="card anim"><span class="tag">03 · Mariana & Jeferson</span><h3>Frontend</h3><p>HTML/CSS/JS + Capacitor, design e cores.</p></div>
+    <div class="card anim"><span class="tag">04 · Daniel</span><h3>Backend</h3><p>Python, Flask e a API REST.</p></div>
+    <div class="card anim"><span class="tag">05 · Todos</span><h3>Impacto & Acesso</h3><p>Água economizada, inclusão digital e app instalável.</p></div>
+    <div class="card anim"><span class="tag">06 · Kauã</span><h3>Validação & Demo</h3><p>Dados coerentes, perfis corretos e o app ao vivo.</p></div>
+  </div>
+</section>
+
+<!-- 3 · RETRO INTRO -->
+<section data-background-gradient="linear-gradient(160deg,#020325,#04113f)">
+  <div class="center" style="margin-top:.3em">
+    <span class="kicker">Antes de começar</span>
+    <h1 style="font-size:2.7em;margin:.2em 0">Vamos relembrar <span class="grad">a jornada</span></h1>
+    <p style="font-size:.7em;color:var(--claro)">5 grupos. 5 peças de um quebra-cabeça. Um único problema.</p>
+    <p class="muted" style="font-size:.5em;margin-bottom:1em">O DAAE Araraquara perde <b style="color:var(--ciano)">45,7%</b> da água distribuída. Cada grupo atacou uma parte.</p>
+    <div class="pieces">
+      <div class="piece anim" style="--pc:#023E8A"><span class="pn">G1</span><span class="pl">Pressão</span></div>
+      <div class="piece anim" style="--pc:#0077B6"><span class="pn">G2</span><span class="pl">Vazão</span></div>
+      <div class="piece anim" style="--pc:#00B4D8"><span class="pn">G3</span><span class="pl">Hardware</span></div>
+      <div class="piece anim" style="--pc:#0095B0"><span class="pn">G4</span><span class="pl">IoT</span></div>
+      <div class="piece anim" style="--pc:#06D6A0"><span class="pn">G5</span><span class="pl">Dashboard</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- 4 · G1 PRESSÃO -->
+<section data-retro="1">
+  <span class="kicker">Grupo 1</span>
+  <h2><span class="grad">Pressão e Nível</span></h2>
+  <p class="muted" style="font-size:.6em;margin-top:-.3em">"Medir a pressão certa salva a rede hídrica"</p>
+  <div class="goal anim">🎯 <b>Ideia simples:</b> pressão é a força com que a água chega. Se estiver baixa, falta água; se estiver alta, pode romper tubulação. O Grupo 1 cuidou de medir isso.</div>
+  <div class="grid g2" style="grid-template-columns:1.6fr 1fr;margin-top:.3em">
+    <ul class="blist">
+      <li class="anim"><b>O que mede:</b> pressão nos setores, reservatórios e pontos críticos.</li>
+      <li class="anim"><b>Por que importa:</b> queda de pressão pode indicar falta de água ou vazamento.</li>
+      <li class="anim"><b>Faixa de referência:</b> rede entre 10.000 e 50.000 mmH2O.</li>
+      <li class="anim"><b>Como controla:</b> sensores enviam medidas para acionar bomba, válvula ou manutenção.</li>
+      <li class="anim"><b>No nosso app:</b> esse dado aparece para DAAE, não para morador comum.</li>
+    </ul>
+    <div class="statbox card anim" style="align-self:center"><div class="stat grad">15.000</div><div class="lbl">mmH2O abaixo disso<br>vira atenção/crítico</div></div>
+  </div>
+</section>
+
+<!-- 4b · G1 NA PRÁTICA -->
+<section data-retro="1">
+  <span class="kicker">Grupo 1 · na prática</span>
+  <h2>Como a pressão vira <span class="grad">ação na rede?</span></h2>
+  <p style="font-size:.58em;max-width:34em">Pensa na pressão como o “pulso” da rede. Quando esse pulso foge do normal, o sistema entende que algum ponto precisa de atenção.</p>
+  <div class="flow anim" style="margin:.55em 0 .7em">
+    <div class="fnode"><div class="ft">Reservatório</div><div class="fs">nível da água</div></div><span class="farr">→</span>
+    <div class="fnode"><div class="ft">Tubulação</div><div class="fs">pressão muda</div></div><span class="farr">→</span>
+    <div class="fnode"><div class="ft">Sensor</div><div class="fs">mede o sinal</div></div><span class="farr">→</span>
+    <div class="fnode"><div class="ft">Sistema</div><div class="fs">gera alerta</div></div>
+  </div>
+  <div class="grid g3" style="margin-top:.35em">
+    <div class="card anim"><h3>Pressão baixa</h3><p>Pode indicar falta de abastecimento, vazamento grande ou bomba trabalhando abaixo do esperado.</p></div>
+    <div class="card anim"><h3>Pressão alta</h3><p>Pode forçar tubulações, conexões e registros, aumentando risco de rompimento.</p></div>
+    <div class="card anim"><h3>Pressão oscilando</h3><p>Pode mostrar consumo irregular, manobra de válvula ou problema em bomba/reservatório.</p></div>
+  </div>
+  <div class="goal anim" style="margin-top:.65em">Como falar: “eu não preciso decorar o nome do sensor; preciso entender que ele transforma uma situação física da rede em um alerta operacional.”</div>
+</section>
+
+<!-- 4c · G1 NO APP -->
+<section data-retro="1">
+  <span class="kicker">Grupo 1 · dados para o Grupo 6</span>
+  <h2>O que chega para o <span class="grad">nosso app?</span></h2>
+  <p style="font-size:.58em;max-width:34em">O Grupo 1 não entrega “uma tela”. Ele entrega leitura de pressão com contexto. O app usa isso para transformar medida técnica em alerta compreensível.</p>
+  <div class="grid g3" style="margin-top:.4em">
+    <div class="card anim"><h3>Onde aconteceu</h3><p>Setor, reservatório, bomba ou ponto da rede. Sem localização, o alerta não tem utilidade.</p></div>
+    <div class="card anim"><h3>Qual foi a pressão</h3><p>Valor medido e faixa esperada. Ex.: abaixo de 15.000 mmH2O vira atenção ou crítico.</p></div>
+    <div class="card anim"><h3>Qual ação sugere</h3><p>Verificar bomba, abrir chamado, checar vazamento ou acompanhar normalização.</p></div>
+  </div>
+  <div class="goal anim" style="margin-top:.7em">Exemplo de fala: “pressão baixa no Setor Norte não vira curiosidade técnica; vira um alerta operacional para o DAAE agir.”</div>
+</section>
+
+<!-- 5 · G2 VAZÃO -->
+<section data-retro="2">
+  <span class="kicker">Grupo 2</span>
+  <h2><span class="grad">Vazão e Detecção de Perdas</span></h2>
+  <p class="muted" style="font-size:.6em;margin-top:-.3em">"Medir o fluxo para descobrir onde ele some"</p>
+  <div class="goal anim">🎯 <b>Ideia simples:</b> vazão é quanto de água passa por um ponto em certo tempo. Se entra muita água em um trecho e sai pouca, alguma coisa se perdeu no caminho.</div>
+  <div class="grid g2" style="grid-template-columns:1.6fr 1fr;margin-top:.3em">
+    <ul class="blist">
+      <li class="anim"><b>Na rede:</b> compara água que entra e água que sai de um setor.</li>
+      <li class="anim"><b>No prédio:</b> mede consumo geral e ajuda o síndico a ver anomalias.</li>
+      <li class="anim"><b>No apartamento:</b> vira histórico de consumo e alerta de uso fora do padrão.</li>
+      <li class="anim"><b>Perda provável:</b> diferença grande entre entrada e saída.</li>
+      <li class="anim"><b>Conta de água:</b> hidrômetro transforma volume consumido em cobrança.</li>
+    </ul>
+    <div class="statbox card anim" style="align-self:center"><div class="stat grad">&gt;10%</div><div class="lbl">diferença na rede<br>= vazamento provável</div></div>
+  </div>
+</section>
+
+<!-- 5b · G2 NA PRÁTICA -->
+<section data-retro="2">
+  <span class="kicker">Grupo 2 · na prática</span>
+  <h2>Como a vazão revela <span class="grad">perdas?</span></h2>
+  <p style="font-size:.58em;max-width:34em">A lógica é parecida com conferir caixa: se entrou uma quantidade e saiu bem menos, alguma coisa ficou pelo caminho.</p>
+  <div class="flow anim" style="margin:.55em 0 .7em">
+    <div class="fnode"><div class="ft">Entrada</div><div class="fs">100 mil L</div></div><span class="farr">→</span>
+    <div class="fnode"><div class="ft">Saída medida</div><div class="fs">88 mil L</div></div><span class="farr">→</span>
+    <div class="fnode"><div class="ft">Diferença</div><div class="fs">12%</div></div><span class="farr">→</span>
+    <div class="fnode"><div class="ft">Alerta</div><div class="fs">perda provável</div></div>
+  </div>
+  <div class="grid g3" style="margin-top:.35em">
+    <div class="card anim"><h3>Consumo normal</h3><p>A vazão acompanha os horários esperados: manhã, almoço, noite.</p></div>
+    <div class="card anim"><h3>Vazamento oculto</h3><p>Existe vazão contínua de madrugada, mesmo sem uso esperado.</p></div>
+    <div class="card anim"><h3>Perda de setor</h3><p>A diferença entre entrada e saída passa do limite aceito.</p></div>
+  </div>
+  <div class="goal anim" style="margin-top:.65em">Como falar: “pressão mostra se a água chega com força; vazão mostra quanta água passou. Juntas, elas contam a história do vazamento.”</div>
+</section>
+
+<!-- 5c · G2 NO APP -->
+<section data-retro="2">
+  <span class="kicker">Grupo 2 · dados para o Grupo 6</span>
+  <h2>O que chega para o <span class="grad">nosso app?</span></h2>
+  <p style="font-size:.58em;max-width:34em">A vazão chega como histórico e comparação. Isso alimenta consumo, conta e alerta.</p>
+  <div class="grid g3" style="margin-top:.4em">
+    <div class="card anim"><h3>Volume consumido</h3><p>Base para histórico diário, semanal, mensal e previsão de conta.</p></div>
+    <div class="card anim"><h3>Padrão de uso</h3><p>Ajuda a saber se aquele consumo está normal para o horário e para aquela unidade.</p></div>
+    <div class="card anim"><h3>Diferença de rede</h3><p>Mostra perda operacional quando a entrada e a saída do setor não batem.</p></div>
+  </div>
+  <div class="goal anim" style="margin-top:.7em">Exemplo de fala: “o número da vazão vira algo que o usuário entende: consumo acima da média, possível vazamento ou perda na rede.”</div>
+</section>
+
+<!-- 6 · G3 HARDWARE -->
+<section data-retro="3">
+  <span class="kicker">Grupo 3</span>
+  <h2><span class="grad">Hardware Embarcado</span></h2>
+  <p class="muted" style="font-size:.6em;margin-top:-.3em">Democratizando o monitoramento por <b style="color:var(--ciano)">menos de R$ 200</b></p>
+  <div class="goal anim">🎯 <b>Ideia simples:</b> o Grupo 3 transformou sensores em um equipamento físico barato, capaz de medir água no mundo real e mandar esses dados para o sistema.</div>
+  <div class="grid g2" style="grid-template-columns:1.2fr .9fr;margin-top:.3em;align-items:start">
+    <ul class="blist">
+      <li class="anim"><b>ESP32:</b> o cérebro barato do sensor, com Wi-Fi.</li>
+      <li class="anim"><b>Sensor de pressão:</b> percebe se a água está chegando fraca ou forte demais.</li>
+      <li class="anim"><b>Sensor de vazão:</b> percebe quanta água está passando.</li>
+      <li class="anim"><b>Evento importante:</b> pressão cai e vazão sobe = possível cano rompido.</li>
+      <li class="anim"><b>Custo:</b> proposta abaixo de R$ 200 por ponto de medição.</li>
+    </ul>
+    <div class="card anim" style="align-self:stretch">
+      <h3 style="color:var(--ciano)">Como o hardware pensa</h3>
+      <div class="flow" style="margin:.35em 0">
+        <div class="fnode"><div class="ft">Mede</div><div class="fs">pressão + vazão</div></div><span class="farr">→</span>
+        <div class="fnode"><div class="ft">Compara</div><div class="fs">padrão normal</div></div><span class="farr">→</span>
+        <div class="fnode"><div class="ft">Alerta</div><div class="fs">anomalia</div></div>
+      </div>
+      <p>Para a apresentação, o importante é entender que o sensor vira um ponto inteligente, capaz de perceber queda de pressão, aumento de vazão e consumo fora de horário.</p>
+    </div>
+  </div>
+</section>
+
+<!-- 6c · G3 PARA O APP -->
+<section data-retro="3">
+  <span class="kicker">Grupo 3 · na prática</span>
+  <h2>O que o equipamento <span class="grad">percebe sozinho?</span></h2>
+  <p style="font-size:.58em;max-width:34em">O hardware é importante porque ele observa o mundo físico antes de qualquer tela existir. Ele percebe sinais que uma pessoa demoraria para notar.</p>
+  <div class="grid g3" style="margin-top:.4em">
+    <div class="card anim"><h3>Cano rompido</h3><p>Pressão cai rápido e a vazão sobe. A água está escapando com força.</p></div>
+    <div class="card anim"><h3>Vazamento oculto</h3><p>Vazão pequena, mas contínua por muito tempo, principalmente de madrugada.</p></div>
+    <div class="card anim"><h3>Sensor offline</h3><p>O equipamento para de mandar dados. Isso também precisa virar aviso.</p></div>
+  </div>
+  <div class="goal anim" style="margin-top:.65em">Como falar: “o hardware é o ouvido do sistema; ele escuta a rede antes de alguém perceber o problema.”</div>
+</section>
+
+<!-- 6b · G3 DADOS -->
+<section data-retro="3">
+  <span class="kicker">Grupo 3 · dados para o Grupo 6</span>
+  <h2>O que chega para o <span class="grad">nosso app?</span></h2>
+  <div class="flow anim" style="margin:.55em 0 .7em">
+    <div class="fnode"><div class="ft">Equipamento</div><div class="fs">id + local</div></div><span class="farr">→</span>
+    <div class="fnode"><div class="ft">Leitura</div><div class="fs">pressão + vazão</div></div><span class="farr">→</span>
+    <div class="fnode"><div class="ft">Status</div><div class="fs">online / falha</div></div><span class="farr">→</span>
+    <div class="fnode"><div class="ft">Evento</div><div class="fs">normal / anomalia</div></div>
+  </div>
+  <div class="grid g3" style="margin-top:.35em">
+    <div class="card anim"><h3>ID do sensor</h3><p>Mostra de qual medidor veio a leitura e evita misturar dados.</p></div>
+    <div class="card anim"><h3>Local físico</h3><p>Casa, bloco, reservatório, setor da cidade ou bomba monitorada.</p></div>
+    <div class="card anim"><h3>Tipo de evento</h3><p>Consumo normal, vazamento provável, queda de pressão ou sensor sem comunicação.</p></div>
+  </div>
+  <div class="goal anim" style="margin-top:.65em">Exemplo de fala: “sem ID e localização, a leitura é só um número; com contexto, ela vira uma notificação útil.”</div>
+</section>
+
+<!-- 7 · G4 IOT -->
+<section data-retro="4">
+  <span class="kicker">Grupo 4</span>
+  <h2><span class="grad">Comunicação IoT</span></h2>
+  <p class="muted" style="font-size:.6em;margin-top:-.3em">"Medir é só a primeira etapa — o dado precisa chegar"</p>
+  <div class="goal anim">🎯 <b>Ideia simples:</b> o sensor sozinho só mede. A comunicação faz essa leitura sair do equipamento e chegar no servidor, no dashboard e no nosso app.</div>
+  <div class="flow anim" style="margin:.5em 0 .7em">
+    <div class="fnode"><div class="ft">ESP32</div><div class="fs">sensor</div></div><span class="farr">→</span>
+    <div class="fnode"><div class="ft">Rede</div><div class="fs">Wi-Fi / LoRa / 4G</div></div><span class="farr">→</span>
+    <div class="fnode"><div class="ft">JSON</div><div class="fs">leitura organizada</div></div><span class="farr">→</span>
+    <div class="fnode"><div class="ft">Servidor</div><div class="fs">API / dashboard / app</div></div>
+  </div>
+  <div class="grid g2" style="grid-template-columns:1.6fr 1fr">
+    <ul class="blist">
+      <li class="anim"><b>JSON:</b> formato combinado para todos os grupos entenderem o dado.</li>
+      <li class="anim"><b>Rede modular:</b> Wi-Fi em prédio, LoRa em longa distância, 4G em ponto isolado.</li>
+      <li class="anim"><b>Segurança:</b> chave de acesso e HTTPS para não expor dados.</li>
+      <li class="anim"><b>Confiabilidade:</b> se a internet cair, tenta reenviar depois.</li>
+    </ul>
+    <div class="statbox card anim" style="align-self:center"><div class="stat" style="color:var(--vermelho)" data-count="45.7" data-suffix="%">0%</div><div class="lbl">de perdas<br>DAAE Araraquara</div></div>
+  </div>
+</section>
+
+<!-- 7b · G4 NA PRÁTICA -->
+<section data-retro="4">
+  <span class="kicker">Grupo 4 · na prática</span>
+  <h2>Como o dado <span class="grad">viaja</span>?</h2>
+  <p style="font-size:.58em;max-width:34em">A comunicação resolve um problema simples: o sensor está no campo, mas a decisão precisa chegar no sistema.</p>
+  <div class="grid g3" style="margin-top:.4em">
+    <div class="card anim"><h3>Prédio ou casa</h3><p>Wi-Fi pode ser suficiente quando existe internet local.</p></div>
+    <div class="card anim"><h3>Ponto distante</h3><p>LoRa ou 4G ajudam quando o sensor está longe ou em área aberta.</p></div>
+    <div class="card anim"><h3>Falha de internet</h3><p>O equipamento pode guardar a leitura e reenviar quando a conexão voltar.</p></div>
+  </div>
+  <div class="goal anim" style="margin-top:.65em">Como falar: “o Grupo 4 é a estrada por onde a leitura sai do sensor e chega no app.”</div>
+</section>
+
+<!-- 7c · G4 CONTRATO DE DADOS -->
+<section data-retro="4">
+  <span class="kicker">Grupo 4 · dados para o Grupo 6</span>
+  <h2>O que precisa vir no <span class="grad">JSON?</span></h2>
+  <p style="font-size:.56em;max-width:34em">JSON é o pacote organizado que chega ao app. Se ele vier incompleto, a notificação pode sair errada.</p>
+  <div class="grid g3" style="margin-top:.4em">
+    <div class="card anim"><h3>Quando</h3><p>Data e horário da leitura. Sem isso, não sabemos se o alerta é atual.</p></div>
+    <div class="card anim"><h3>Onde</h3><p>Sensor, setor, bloco, apartamento ou reservatório associado.</p></div>
+    <div class="card anim"><h3>O que mediu</h3><p>Pressão, vazão, volume, status da bomba ou nível do reservatório.</p></div>
+    <div class="card anim"><h3>Qual estado</h3><p>Normal, atenção, crítico, informativo ou resolvido.</p></div>
+    <div class="card anim"><h3>Qual origem</h3><p>Cidade, condomínio ou unidade individual.</p></div>
+    <div class="card anim"><h3>Qual ação</h3><p>Mensagem curta que vira alerta ou card no app.</p></div>
+  </div>
+</section>
+
+<!-- 8 · G5 DASHBOARD -->
+<section data-retro="5">
+  <span class="kicker">Grupo 5</span>
+  <h2><span class="grad">Dashboard & Analytics</span></h2>
+  <p class="muted" style="font-size:.6em;margin-top:-.3em">"Transformar dados em decisões que geram impacto real"</p>
+  <div class="goal anim">🎯 <b>Ideia simples:</b> o Grupo 5 organizou os dados em painéis para operação. Eles enxergam a cidade inteira; nós usamos parte dessa base para alimentar o app.</div>
+  <div class="flow anim" style="margin:.5em 0 .7em">
+    <div class="fnode"><div class="ft">Dados brutos</div><div class="fs">leituras e alertas</div></div><span class="farr">→</span>
+    <div class="fnode"><div class="ft">Tratamento</div><div class="fs">limpeza e cálculo</div></div><span class="farr">→</span>
+    <div class="fnode"><div class="ft">Indicadores</div><div class="fs">perdas e status</div></div><span class="farr">→</span>
+    <div class="fnode"><div class="ft">Dashboard</div><div class="fs">decisão operacional</div></div>
+  </div>
+  <div class="grid g2" style="grid-template-columns:1.6fr 1fr">
+    <ul class="blist">
+      <li class="anim"><b>Setores:</b> divide a cidade em áreas acompanháveis.</li>
+      <li class="anim"><b>Sensores:</b> 48 pontos simulados com leituras de rede.</li>
+      <li class="anim"><b>Alertas:</b> classifica vazamento, pressão crítica e manutenção.</li>
+      <li class="anim"><b>Perdas:</b> mostra onde a água distribuída não está chegando corretamente.</li>
+    </ul>
+    <div class="statbox card anim" style="align-self:center"><div class="stat grad">48</div><div class="lbl">sensores simulados<br>na base do dashboard</div></div>
+  </div>
+</section>
+
+<!-- 8b · G5 NA PRÁTICA -->
+<section data-retro="5">
+  <span class="kicker">Grupo 5 · na prática</span>
+  <h2>O dashboard olha a <span class="grad">cidade inteira</span></h2>
+  <p style="font-size:.58em;max-width:34em">Enquanto o app precisa ser simples para cada usuário, o dashboard precisa mostrar a operação completa para quem gerencia a rede.</p>
+  <div class="grid g3" style="margin-top:.4em">
+    <div class="card anim"><h3>Mapa de setores</h3><p>Mostra onde a rede está normal, em atenção ou crítica.</p></div>
+    <div class="card anim"><h3>Indicadores</h3><p>Resume perdas, pressão média, consumo e alertas em números rápidos.</p></div>
+    <div class="card anim"><h3>Lista de ocorrências</h3><p>Ajuda a priorizar vazamento, manutenção e falha de comunicação.</p></div>
+  </div>
+  <div class="goal anim" style="margin-top:.65em">Como falar: “o dashboard é a sala de controle; o app é a informação certa chegando para cada pessoa.”</div>
+</section>
+
+<!-- 8c · G5 DADOS USADOS -->
+<section data-retro="5">
+  <span class="kicker">Grupo 5 · dados para o Grupo 6</span>
+  <h2>O que aproveitamos no <span class="grad">nosso app?</span></h2>
+  <p style="font-size:.56em;max-width:34em">A equipe do dashboard já organizou a visão operacional. O Grupo 6 reaproveita esses dados, mas filtra o que cada perfil pode ver.</p>
+  <div class="grid g3" style="margin-top:.35em">
+    <div class="card anim"><h3>Setores</h3><p>Entram no acesso DAAE para mostrar regiões críticas da cidade.</p></div>
+    <div class="card anim"><h3>Sensores e pontos</h3><p>Viraram equipamentos monitorados: medidores, bombas e reservatórios.</p></div>
+    <div class="card anim"><h3>Leituras</h3><p>Alimentam gráficos, histórico e comparação de consumo.</p></div>
+    <div class="card anim"><h3>Alertas</h3><p>Viraram notificações com severidade: crítico, aviso, informativo ou OK.</p></div>
+    <div class="card anim"><h3>Perdas</h3><p>Ficam no perfil DAAE, porque são dados da operação da cidade.</p></div>
+    <div class="card anim"><h3>Condomínio</h3><p>Complementamos com contas, unidades, reservatórios e bomba submersa.</p></div>
+  </div>
+  <div class="goal anim" style="margin-top:.65em">Exemplo de fala: “não copiamos o dashboard; usamos os dados dele para criar uma experiência mobile por perfil.”</div>
+</section>
+
+<!-- 9 · PUZZLE QUASE COMPLETO -->
+<section data-background-gradient="linear-gradient(160deg,#020325,#04113f)">
+  <div class="center">
+    <span class="kicker">Quase lá</span>
+    <h2 style="font-size:1.9em">O quebra-cabeça está <span class="grad">quase completo</span></h2>
+    <div class="pieces" style="margin:.6em 0">
+      <div class="piece on" style="--pc:#023E8A;--pcs:rgba(2,62,138,.5)"><span class="chk">✓</span><span class="pn">G1</span><span class="pl">Pressão</span></div>
+      <div class="piece on" style="--pc:#0077B6;--pcs:rgba(0,119,182,.5)"><span class="chk">✓</span><span class="pn">G2</span><span class="pl">Vazão</span></div>
+      <div class="piece on" style="--pc:#00B4D8;--pcs:rgba(0,180,216,.5)"><span class="chk">✓</span><span class="pn">G3</span><span class="pl">Hardware</span></div>
+      <div class="piece on" style="--pc:#0095B0;--pcs:rgba(0,149,176,.5)"><span class="chk">✓</span><span class="pn">G4</span><span class="pl">IoT</span></div>
+      <div class="piece on" style="--pc:#06D6A0;--pcs:rgba(6,214,160,.5)"><span class="chk">✓</span><span class="pn">G5</span><span class="pl">Dashboard</span></div>
+      <div class="piece anim" id="g6piece" style="--pc:#FFB703;--pcs:rgba(255,183,3,.5)"><span class="pn">G6</span><span class="pl">App ?</span></div>
+    </div>
+    <p class="anim" style="font-size:.72em;color:var(--claro)">Faltava a peça que coloca tudo isso <b>nas mãos do usuário</b>.</p>
+  </div>
+</section>
+
+<!-- 10 · TRANSIÇÃO G6 -->
+<section data-auto-animate data-background-gradient="linear-gradient(160deg,#041038,#062a52)">
+  <div class="center" style="margin-top:.4em">
+    <span class="kicker">A última peça</span>
+    <h1 data-id="title" style="font-size:3.4em"><span class="grad2">SmartWater</span> App</h1>
+    <h2 class="grad" style="font-size:1.4em">Grupo 6</h2>
+    <div class="pieces" style="margin-top:.6em">
+      <div class="piece on" style="--pc:#023E8A;height:80px;width:110px"><span class="pn">G1</span></div>
+      <div class="piece on" style="--pc:#0077B6;height:80px;width:110px"><span class="pn">G2</span></div>
+      <div class="piece on" style="--pc:#00B4D8;height:80px;width:110px"><span class="pn">G3</span></div>
+      <div class="piece on" style="--pc:#0095B0;height:80px;width:110px"><span class="pn">G4</span></div>
+      <div class="piece on" style="--pc:#06D6A0;height:80px;width:110px"><span class="pn">G5</span></div>
+      <div class="piece on" style="--pc:#FFB703;height:80px;width:110px"><span class="pn">G6</span></div>
+    </div>
+    <p class="anim muted" style="font-size:.6em;margin-top:1em">Agora sim, o sistema está completo.</p>
+  </div>
+</section>
+
+<!-- 11 · VISÃO GERAL DO APP -->
+<section>
+  <span class="who">Kauã</span>
+  <span class="kicker">O produto</span>
+  <h2>SmartWater App — <span class="grad">visão geral</span></h2>
+  <p style="font-size:.6em;max-width:30em">Plataforma mobile/web que conecta <b>moradores</b>, <b>síndicos</b> e <b>operadores do DAAE</b>: consumo em tempo real, detecção de vazamentos e alertas inteligentes por perfil.</p>
+  <div class="grid g3" style="margin-top:.5em">
+    <div class="card anim" style="border-color:rgba(2,62,138,.5)"><span class="ic">🏠</span><h3>Morador</h3><p>Consumo do próprio apartamento · contas · histórico · alerta pessoal de vazamento.</p></div>
+    <div class="card anim" style="border-color:rgba(0,119,182,.5)"><span class="ic">🏢</span><h3>Síndico</h3><p>Visão geral do condomínio: consumo total, contas comuns, reservatórios e avisos internos.</p></div>
+    <div class="card anim" style="border-color:rgba(6,214,160,.5)"><span class="ic">🌊</span><h3>Operador DAAE</h3><p>Alertas da cidade · setores críticos · pressão, vazão, bombas e reservatórios.</p></div>
+  </div>
+</section>
+
+<!-- 11b · REGRAS DE PERFIL -->
+<section>
+  <span class="who">Kauã</span>
+  <span class="kicker">Permissões</span>
+  <h2>Cada perfil vê <span class="grad">só o que faz sentido</span></h2>
+  <div class="grid g3" style="margin-top:.45em">
+    <div class="card anim" style="border-color:rgba(2,62,138,.55)">
+      <h3>Morador</h3>
+      <ul class="blist">
+        <li>Consumo do próprio apartamento</li>
+        <li>Contas e vencimentos</li>
+        <li>Alertas pessoais</li>
+      </ul>
+    </div>
+    <div class="card anim" style="border-color:rgba(0,119,182,.55)">
+      <h3>Síndico</h3>
+      <ul class="blist">
+        <li>Resumo do condomínio</li>
+        <li>Blocos, reservatórios e bombas internas</li>
+        <li>Sem sensores da cidade</li>
+      </ul>
+    </div>
+    <div class="card anim" style="border-color:rgba(6,214,160,.55)">
+      <h3>DAAE</h3>
+      <ul class="blist">
+        <li>Setores da cidade</li>
+        <li>Pressão, vazão e perdas</li>
+        <li>Reservatórios, bombas e medidores públicos</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- 11c · ALERTA CERTO -->
+<section>
+  <span class="who">Kauã</span>
+  <span class="kicker">Consistência</span>
+  <h2>Por que a notificação <span class="grad">não pode errar</span>?</h2>
+  <p style="font-size:.58em;max-width:34em">Uma notificação errada derruba a credibilidade do sistema. Por isso cada alerta precisa ter origem, regra, severidade e destinatário.</p>
+  <div class="flow anim" style="margin:.55em 0 .65em">
+    <div class="fnode"><div class="ft">Dado real</div><div class="fs">leitura / conta</div></div><span class="farr">→</span>
+    <div class="fnode"><div class="ft">Regra</div><div class="fs">limite + contexto</div></div><span class="farr">→</span>
+    <div class="fnode"><div class="ft">Severidade</div><div class="fs">ok / aviso / crítico</div></div><span class="farr">→</span>
+    <div class="fnode"><div class="ft">Perfil</div><div class="fs">morador / síndico / DAAE</div></div>
+  </div>
+  <div class="grid g2">
+    <div class="card anim"><h3>Exemplo correto</h3><p>Pressão crítica no setor Vila Sedenho: aparece para DAAE, não para Marina moradora.</p></div>
+    <div class="card anim"><h3>Exemplo correto</h3><p>Conta do apartamento 204 vencendo: aparece para o morador, não para a equipe da cidade.</p></div>
+  </div>
+</section>
+
+<!-- 12 · FLUXO DO APP -->
+<section>
+  <span class="who">Kauã</span>
+  <span class="kicker">Como o app funciona</span>
+  <h2>Do dado bruto até o <span class="grad">alerta certo</span></h2>
+  <p style="font-size:.58em;max-width:34em">Esse é o coração do Grupo 6: pegar tudo que os outros grupos produziram e transformar em uma mensagem simples, útil e enviada para a pessoa certa.</p>
+  <div class="flow anim" style="margin:.6em 0 .7em">
+    <div class="fnode"><div class="ft">Grupos 1–5</div><div class="fs">medição + dashboard</div></div><span class="farr">→</span>
+    <div class="fnode"><div class="ft">JSON/CSV</div><div class="fs">dados padronizados</div></div><span class="farr">→</span>
+    <div class="fnode"><div class="ft">Grupo 6</div><div class="fs">regras + perfis</div></div><span class="farr">→</span>
+    <div class="fnode"><div class="ft">App</div><div class="fs">ação prática</div></div>
+  </div>
+  <div class="grid g3" style="margin-top:.35em">
+    <div class="card anim"><h3>Morador</h3><p>Recebe consumo do apartamento, conta e alerta pessoal de vazamento.</p></div>
+    <div class="card anim"><h3>Síndico</h3><p>Recebe visão do condomínio: contas comuns, reservatórios e bomba interna.</p></div>
+    <div class="card anim"><h3>DAAE</h3><p>Recebe rede pública: setores, pressão, vazão, perdas, bombas e medidores.</p></div>
+  </div>
+  <div class="goal anim" style="margin-top:.65em">Frase para falar: “Nosso app é a camada que traduz dado técnico em ação prática.”</div>
+</section>
+
+<!-- 13 · BD CAPA -->
+<section data-auto-animate class="divhero center" data-background-gradient="linear-gradient(160deg,#021a3f,#023E8A)">
+  <div class="divnum" data-id="dn">02</div>
+  <h1 data-id="title">Banco de <span class="grad">Dados</span></h1>
+  <p style="font-size:.7em;color:var(--claro)">MySQL · Modelagem Relacional · Integração de Dados</p>
+  <p class="muted" style="margin-top:1.4em;font-size:.55em">Apresenta: <b style="color:#fff">Bianca</b></p>
+</section>
+
+<!-- 14 · POR QUE MYSQL -->
+<section>
+  <span class="who">Bianca</span>
+  <span class="kicker">Decisão técnica</span>
+  <h2>Por que <span class="grad">MySQL</span>?</h2>
+  <div class="grid g2" style="margin-top:.5em">
+    <div class="card anim"><span class="ic">💰</span><h3>Open source & gratuito</h3><p>Sem custo de licença — ideal para startup acadêmica e hospedagem barata.</p></div>
+    <div class="card anim"><span class="ic">🔗</span><h3>Relacional e estruturado</h3><p>Usuários, sensores e alertas têm relações claras. Integridade referencial garantida.</p></div>
+    <div class="card anim"><span class="ic">🛡️</span><h3>Maduro e confiável</h3><p>30+ anos, conector nativo <span class="tag">mysql-connector-python</span> no Flask.</p></div>
+    <div class="card anim"><span class="ic">🚀</span><h3>Escala para produção</h3><p>Dev em SQLite, produção em MySQL — só muda a conexão, zero reescrita.</p></div>
+  </div>
+</section>
+
+<!-- 15 · DIAGRAMA BD -->
+<section>
+  <span class="who">Bianca</span>
+  <span class="kicker">Modelagem</span>
+  <h2>As tabelas principais e seus <span class="grad">vínculos</span></h2>
+  <div class="grid g2" style="grid-template-columns:1.1fr .9fr;align-items:start;margin-top:.2em">
+    <div>
+      <div class="grid g2" style="gap:12px">
+        <div class="card anim" style="padding:.6em"><h3 style="font-size:.66em;color:var(--ciano)">usuarios</h3><p style="font-size:.5em">id 🔑 · nome · email · perfil · meta_mensal</p></div>
+        <div class="card anim" style="padding:.6em"><h3 style="font-size:.66em;color:var(--ciano)">sensores</h3><p style="font-size:.5em">id 🔑 · nome · localizacao · status</p></div>
+        <div class="card anim" style="padding:.6em"><h3 style="font-size:.66em;color:var(--ciano)">leituras</h3><p style="font-size:.5em">id 🔑 · sensor_id 🔗 · valor_vazao · data_hora</p></div>
+        <div class="card anim" style="padding:.6em"><h3 style="font-size:.66em;color:var(--ciano)">notificacoes</h3><p style="font-size:.5em">id 🔑 · usuario_id 🔗 · nivel · titulo</p></div>
+      </div>
+      <div class="card anim" style="padding:.6em;margin-top:12px"><h3 style="font-size:.66em;color:var(--ciano)">preferencias_alerta</h3><p style="font-size:.5em">id 🔑 · usuario_id 🔗 (1:1) · limites · horario_silencio</p></div>
+      <p class="anim" style="font-size:.46em;margin-top:.6em;color:var(--muted)">usuarios <b style="color:var(--ciano)">1:N</b> notificacoes · usuarios <b style="color:var(--verde)">1:1</b> preferencias · sensores <b style="color:var(--ciano)">1:N</b> leituras</p>
+    </div>
+    <div class="card anim">
+      <h3 style="color:var(--ciano)">Leitura do diagrama</h3>
+      <ul class="blist">
+        <li><b>Usuário</b> define permissão: morador, síndico ou DAAE.</li>
+        <li><b>Sensor</b> registra grandezas físicas, como vazão e pressão.</li>
+        <li><b>Leitura</b> guarda o histórico que alimenta gráficos e alertas.</li>
+        <li><b>Notificação</b> entrega a mensagem para o perfil certo.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- 15b · BD INTEGRAÇÃO -->
+<section>
+  <span class="who">Bianca</span>
+  <span class="kicker">Dados do projeto completo</span>
+  <h2>Além das tabelas do app: <span class="grad">integração</span></h2>
+  <p style="font-size:.56em;max-width:34em">Como o dashboard e os outros grupos entregam os dados em JSON/CSV, criamos uma camada de integração para consolidar tudo antes de mostrar no app.</p>
+  <div class="grid g3" style="margin-top:.45em">
+    <div class="statbox card anim"><div class="stat grad">12</div><div class="lbl">setores simulados</div></div>
+    <div class="statbox card anim"><div class="stat grad">50</div><div class="lbl">equipamentos entre sensores e bombas</div></div>
+    <div class="statbox card anim"><div class="stat grad">31</div><div class="lbl">alertas classificados</div></div>
+  </div>
+  <div class="goal anim" style="margin-top:.65em">Entram dados de cidade, condomínio, contas, leituras, bombas, reservatórios, perdas e alertas. O app filtra conforme o perfil.</div>
+</section>
+
+<!-- 16 · FRONT CAPA -->
+<section data-auto-animate class="divhero center" data-background-gradient="linear-gradient(160deg,#022a4f,#0077B6)">
+  <div class="divnum" data-id="dn">03</div>
+  <h1 data-id="title"><span class="grad">Frontend</span></h1>
+  <p style="font-size:.7em;color:var(--claro)">HTML · CSS · JavaScript · Capacitor 8.3</p>
+  <p class="muted" style="margin-top:1.4em;font-size:.55em">Apresenta: <b style="color:#fff">Mariana &amp; Jeferson</b></p>
+</section>
+
+<!-- 17 · STACK FRONT -->
+<section>
+  <span class="who">Mariana &amp; Jeferson</span>
+  <span class="kicker">Stack</span>
+  <h2>As tecnologias do <span class="grad">frontend</span></h2>
+  <div class="grid g2" style="margin-top:.5em">
+    <div class="card anim"><span class="ic">🌐</span><h3>HTML5 · CSS3 · JS Vanilla</h3><p>Sem framework pesado: roda em qualquer navegador, carrega rápido, fácil de manter.</p></div>
+    <div class="card anim"><span class="ic">📱</span><h3>Capacitor 8.3.1</h3><p>Empacota o app web como <b>APK Android nativo</b>. Uma base → web, PWA e APK.</p></div>
+    <div class="card anim"><span class="ic">⚡</span><h3>fetch + Flask API</h3><p>Consome a API via <span class="tag">fetch()</span>. Flask-CORS libera chamadas com segurança.</p></div>
+    <div class="card anim"><span class="ic">✏️</span><h3>Plus Jakarta Sans</h3><p>Tipografia geométrica moderna, ótima legibilidade do iPhone SE ao iPad Pro.</p></div>
+  </div>
+</section>
+
+<!-- 18 · PALETA -->
+<section>
+  <span class="who">Mariana &amp; Jeferson</span>
+  <span class="kicker">Design system</span>
+  <h2>Paleta inspirada na <span class="grad">água</span></h2>
+  <p style="font-size:.55em;color:var(--muted)">Profundidade, fluidez e confiança — com semântica de alertas clara.</p>
+  <div class="grid g4" style="margin-top:.4em">
+    <div class="swatch anim" style="background:#023E8A;color:#fff">#023E8A</div>
+    <div class="swatch anim" style="background:#0077B6;color:#fff">#0077B6</div>
+    <div class="swatch anim" style="background:#00B4D8;color:#012">#00B4D8</div>
+    <div class="swatch anim" style="background:#CAF0F8;color:#024">#CAF0F8</div>
+    <div class="swatch anim" style="background:#06D6A0;color:#012">#06D6A0 · ok</div>
+    <div class="swatch anim" style="background:#FFB703;color:#311">#FFB703 · alerta</div>
+    <div class="swatch anim" style="background:#EF233C;color:#fff">#EF233C · crítico</div>
+    <div class="swatch anim" style="background:#fff;color:#024">#FFFFFF · base</div>
+  </div>
+</section>
+
+<!-- 19 · TELAS -->
+<section>
+  <span class="who">Mariana &amp; Jeferson</span>
+  <span class="kicker">Layout & integração</span>
+  <h2>As telas e o que cada uma <span class="grad">resolve</span></h2>
+  <div class="grid g2" style="grid-template-columns:1fr 1.05fr;align-items:start;margin-top:.2em">
+    <div class="grid g2" style="gap:12px">
+      <div class="card anim" style="padding:.55em"><h3 style="font-size:.62em">Login</h3><p style="font-size:.46em">Email/senha → token JWT salvo localmente.</p></div>
+      <div class="card anim" style="padding:.55em"><h3 style="font-size:.62em">Morador</h3><p style="font-size:.46em">Consumo do apartamento, meta e contas.</p></div>
+      <div class="card anim" style="padding:.55em"><h3 style="font-size:.62em">Síndico</h3><p style="font-size:.46em">Resumo do condomínio, não rede pública.</p></div>
+      <div class="card anim" style="padding:.55em"><h3 style="font-size:.62em">Notificações</h3><p style="font-size:.46em">Alertas com ícone por severidade.</p></div>
+      <div class="card anim" style="padding:.55em;grid-column:span 2"><h3 style="font-size:.62em">Painel DAAE</h3><p style="font-size:.46em">Mapa setorial · pressão e vazão da rede pública.</p></div>
+    </div>
+    <div class="card anim">
+      <h3 style="color:var(--ciano)">Decisão de design</h3>
+      <ul class="blist">
+        <li>Mobile first: informação principal aparece sem rolagem excessiva.</li>
+        <li>Cores por severidade: verde, amarelo e vermelho ajudam a agir rápido.</li>
+        <li>Cards limpos: bom para leitura no celular e em apresentação.</li>
+        <li>Navegação por perfil: cada usuário entra direto na sua realidade.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- 19b · FRONT EXPERIÊNCIA -->
+<section>
+  <span class="who">Mariana &amp; Jeferson</span>
+  <span class="kicker">Experiência do usuário</span>
+  <h2>Por que o app parece <span class="grad">simples</span>?</h2>
+  <div class="grid g3" style="margin-top:.45em">
+    <div class="card anim"><h3>Morador não é técnico</h3><p>Ele quer saber “quanto gastei?”, “minha conta venceu?” e “tem vazamento?”.</p></div>
+    <div class="card anim"><h3>Síndico administra</h3><p>Ele precisa de visão geral, contas do condomínio e avisos que afetam o prédio.</p></div>
+    <div class="card anim"><h3>DAAE opera a cidade</h3><p>Ele pode ver pressão, vazão, setores, bombas, reservatórios e perdas.</p></div>
+  </div>
+  <div class="goal anim" style="margin-top:.7em">A mesma tecnologia por trás, mas três experiências diferentes. Isso evita tela poluída e perguntas difíceis na hora da banca.</div>
+</section>
+
+<!-- 20 · BACK CAPA -->
+<section data-auto-animate class="divhero center" data-background-gradient="linear-gradient(160deg,#013a4d,#00B4D8)">
+  <div class="divnum" data-id="dn" style="color:#012">04</div>
+  <h1 data-id="title" style="color:#012">Backend</h1>
+  <p style="font-size:.7em;color:#023">Python · Flask · REST API · MySQL</p>
+  <p style="margin-top:1.4em;font-size:.55em;color:#024">Apresenta: <b>Daniel</b></p>
+</section>
+
+<!-- 21 · ARQUITETURA FLASK -->
+<section>
+  <span class="who">Daniel</span>
+  <span class="kicker">Arquitetura</span>
+  <h2>Fluxo ponta a ponta no <span class="grad">Flask</span></h2>
+  <div class="flow anim" style="margin:.4em 0 .7em">
+    <div class="fnode"><div class="ft">Dados G1–G5</div><div class="fs">JSON / CSV</div></div><span class="farr">→</span>
+    <div class="fnode"><div class="ft">Integração</div><div class="fs">valida e organiza</div></div><span class="farr">→</span>
+    <div class="fnode" style="border-color:var(--ciano)"><div class="ft">Flask API</div><div class="fs">Python 3</div></div><span class="farr">→</span>
+    <div class="fnode"><div class="ft">App</div><div class="fs">frontend</div></div>
+  </div>
+  <div class="grid g3">
+    <div class="card anim" style="padding:.6em"><span class="tag">autenticação</span><p style="margin-top:.3em">Identifica quem entrou: morador, síndico ou DAAE.</p></div>
+    <div class="card anim" style="padding:.6em"><span class="tag">integração</span><p style="margin-top:.3em">Lê os dados dos grupos e devolve no formato do app.</p></div>
+    <div class="card anim" style="padding:.6em"><span class="tag">contas</span><p style="margin-top:.3em">Organiza vencimentos, valores e consumo por unidade/condomínio.</p></div>
+    <div class="card anim" style="padding:.6em"><span class="tag">alertas</span><p style="margin-top:.3em">Classifica severidade e define quem deve receber.</p></div>
+    <div class="card anim" style="padding:.6em"><span class="tag">condomínio</span><p style="margin-top:.3em">Separa reservatórios, bombas internas e visão do síndico.</p></div>
+    <div class="card anim" style="padding:.6em"><span class="tag">cidade</span><p style="margin-top:.3em">Entrega leitura operacional para equipe do DAAE.</p></div>
+  </div>
+</section>
+
+<!-- 22 · ENDPOINTS SEM CÓDIGO -->
+<section>
+  <span class="who">Daniel</span>
+  <span class="kicker">API REST</span>
+  <h2>Exemplos de rotas e responsabilidades da <span class="grad">API</span></h2>
+  <div class="grid g2" style="grid-template-columns:.95fr 1.1fr;align-items:start;margin-top:.2em">
+    <div>
+      <div class="ep anim"><span class="method m-post">POST</span><span class="path">/api/login</span><span class="epd">JWT</span></div>
+      <div class="ep anim"><span class="method m-get">GET</span><span class="path">/api/consumo/dashboard</span><span class="epd">morador</span></div>
+      <div class="ep anim"><span class="method m-get">GET</span><span class="path">/api/contas/resumo</span><span class="epd">síndico</span></div>
+      <div class="ep anim"><span class="method m-get">GET</span><span class="path">/api/cidade/alertas</span><span class="epd">DAAE</span></div>
+      <div class="ep anim"><span class="method m-put">PUT</span><span class="path">/api/usuario/preferencias</span><span class="epd">config</span></div>
+    </div>
+    <div class="card anim">
+      <h3 style="color:var(--ciano)">O que o backend garante?</h3>
+      <ul class="blist">
+        <li><b>Autenticação:</b> cada usuário entra com seu perfil.</li>
+        <li><b>Filtro:</b> morador não recebe dado de rede pública.</li>
+        <li><b>Padronização:</b> tudo sai em JSON para o frontend.</li>
+        <li><b>Regras:</b> alertas são classificados antes de aparecer na tela.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- 22b · VALIDAÇÃO BACKEND -->
+<section>
+  <span class="who">Daniel</span>
+  <span class="kicker">Backend na prática</span>
+  <h2>Exemplos de alerta: <span class="grad">quem recebe?</span></h2>
+  <p style="font-size:.56em;max-width:34em">O backend é o filtro. Ele recebe eventos diferentes e decide se aquilo aparece para morador, síndico ou DAAE.</p>
+  <div class="grid g2" style="margin-top:.4em">
+    <div class="card anim"><h3>Pressão crítica no setor</h3><p><b style="color:var(--ciano)">Vai para DAAE.</b> É problema da rede pública, não da tela do morador.</p></div>
+    <div class="card anim"><h3>Bomba submersa desligada</h3><p><b style="color:var(--ciano)">Vai para síndico.</b> Afeta o condomínio e precisa de manutenção interna.</p></div>
+    <div class="card anim"><h3>Conta do apto vencendo</h3><p><b style="color:var(--ciano)">Vai para morador.</b> É informação individual daquela unidade.</p></div>
+    <div class="card anim"><h3>Sensor sem comunicação</h3><p><b style="color:var(--ciano)">Vai para responsável certo.</b> Cidade se for rede pública; síndico se for condomínio.</p></div>
+  </div>
+  <div class="goal anim" style="margin-top:.65em">Frase para falar: “o backend não só entrega dados; ele impede que a mensagem certa apareça para a pessoa errada.”</div>
+</section>
+
+<!-- 23 · SUSTENTABILIDADE CAPA -->
+<section data-auto-animate class="divhero center" data-background-gradient="linear-gradient(160deg,#02281a,#06D6A0)">
+  <div class="divnum" data-id="dn" style="color:#012">05</div>
+  <h1 data-id="title" style="color:#fff">Impacto & Acesso</h1>
+  <p style="font-size:.7em;color:#eafff7">Menos desperdício · menos deslocamento · app disponível para todos</p>
+  <p style="margin-top:1.2em;font-size:.5em;color:#cfeee2">Apresentam: <b style="color:#fff">todos os integrantes</b></p>
+</section>
+
+<!-- 24 · IMPACTO NA ÁGUA -->
+<section>
+  <span class="kicker">Sustentabilidade na prática</span>
+  <h2>Onde o SmartWater reduz <span class="grad">desperdício?</span></h2>
+  <p style="font-size:.56em;max-width:34em">A parte sustentável do projeto não é só discurso: é detectar mais cedo onde a água está sendo perdida.</p>
+  <div class="grid g2" style="margin-top:.4em">
+    <div class="card anim" style="border-color:rgba(6,214,160,.4)"><span class="ic">💧</span><h3>Vazamento aparece antes</h3><p>Pressão baixa, vazão anormal e consumo fora do padrão viram alerta antes de virar desperdício grande.</p></div>
+    <div class="card anim" style="border-color:rgba(0,149,176,.4)"><span class="ic">📉</span><h3>Perda fica visível</h3><p>Setores com diferença entre entrada e saída deixam de ser “suspeita” e viram dado para ação.</p></div>
+    <div class="card anim" style="border-color:rgba(0,119,182,.4)"><span class="ic">🔧</span><h3>Manutenção mais rápida</h3><p>O alerta chega para quem pode agir: DAAE, síndico ou morador.</p></div>
+    <div class="card anim" style="border-color:rgba(2,62,138,.4)"><span class="ic">📱</span><h3>Consumo consciente</h3><p>Quando o usuário enxerga consumo e conta, ele entende o impacto do próprio uso.</p></div>
+  </div>
+  <div class="goal anim" style="margin-top:.65em">Frase para falar: “sustentabilidade aqui é transformar perda invisível em alerta visível.”</div>
+</section>
+
+<!-- 25 · ACESSO E INCLUSÃO -->
+<section>
+  <span class="kicker">Acesso e inclusão</span>
+  <h2>O app precisa chegar em <span class="grad">qualquer usuário</span></h2>
+  <p style="font-size:.55em;max-width:34em">Um sistema de água inteligente não pode ficar preso a computador caro, dashboard técnico ou loja de aplicativo. Por isso a entrega foi pensada para acesso simples.</p>
+  <div class="grid g2" style="margin-top:.4em">
+    <div class="card anim"><span class="ic">🏠</span><h3>Morador</h3><p>Não precisa entender sensor: vê consumo, conta e alerta em linguagem direta.</p></div>
+    <div class="card anim"><span class="ic">🏢</span><h3>Síndico</h3><p>Consegue acompanhar o condomínio sem depender de planilha manual.</p></div>
+    <div class="card anim"><span class="ic">🌊</span><h3>DAAE</h3><p>Recebe alerta operacional para abrir o dashboard e investigar o problema.</p></div>
+    <div class="card anim"><span class="ic">📲</span><h3>Android e iPhone</h3><p>APK para Android e PWA no iPhone evitam barreira de loja, taxa e aprovação.</p></div>
+  </div>
+  <div class="goal anim" style="margin-top:.65em">Frase para falar: “o app é a porta de entrada: cada perfil acessa o sistema no formato que consegue usar.”</div>
+</section>
+
+<!-- 26 · ENTREGA MOBILE -->
+<section>
+  <span class="kicker">Disponibilização</span>
+  <h2>Como entregar sem depender da <span class="grad">Play Store/App Store</span>?</h2>
+  <p style="font-size:.55em;max-width:34em">Para a apresentação e para testes, a distribuição direta faz mais sentido: a pessoa baixa, instala ou salva na tela inicial.</p>
+  <div class="steps" style="margin-top:.5em">
+    <div class="step card anim"><div class="sn">1</div><h3 style="font-size:.62em">Web</h3><p>Abre pelo navegador em qualquer aparelho.</p></div>
+    <div class="step card anim"><div class="sn">2</div><h3 style="font-size:.62em">Android</h3><p>Baixa o APK pela página inicial e instala direto.</p></div>
+    <div class="step card anim"><div class="sn">3</div><h3 style="font-size:.62em">iPhone</h3><p>Abre no Safari e salva como PWA na tela inicial.</p></div>
+    <div class="step card anim"><div class="sn">4</div><h3 style="font-size:.62em">Servidor</h3><p>VPS com HTTPS para app, API e download.</p></div>
+  </div>
+  <div class="goal anim" style="margin-top:.65em">Frase para falar: “não precisamos publicar em loja para testar: Android recebe APK e iPhone usa PWA.”</div>
+</section>
+
+<!-- 27 · CICLO DE IMPACTO -->
+<section>
+  <span class="kicker">Resultado esperado</span>
+  <h2>O ciclo de impacto do <span class="grad">SmartWater</span></h2>
+  <p style="font-size:.55em;max-width:34em">A tecnologia só é sustentável quando muda comportamento ou acelera uma ação real.</p>
+  <div class="flow anim" style="margin:.6em 0 .75em">
+    <div class="fnode"><div class="ft">Mede</div><div class="fs">pressão / vazão</div></div><span class="farr">→</span>
+    <div class="fnode"><div class="ft">Detecta</div><div class="fs">anomalia</div></div><span class="farr">→</span>
+    <div class="fnode"><div class="ft">Avisa</div><div class="fs">perfil correto</div></div><span class="farr">→</span>
+    <div class="fnode"><div class="ft">Age</div><div class="fs">corrige perda</div></div>
+  </div>
+  <div class="grid g3" style="margin-top:.35em">
+    <div class="card anim"><h3>Ambiental</h3><p>Menos água perdida antes de chegar ao consumidor.</p></div>
+    <div class="card anim"><h3>Social</h3><p>Informação simples para quem não é técnico.</p></div>
+    <div class="card anim"><h3>Operacional</h3><p>Equipe aciona manutenção com mais contexto.</p></div>
+  </div>
+</section>
+
+<!-- 28 · DEMO CAPA -->
+<section data-auto-animate class="divhero center" data-background-gradient="linear-gradient(160deg,#3a2a00,#FFB703)">
+  <div class="divnum" data-id="dn" style="color:#311">06</div>
+  <h1 data-id="title" style="color:#1a1200">Preparação da Demo</h1>
+  <p style="font-size:.7em;color:#2a1f00">O que vamos provar ao abrir o app</p>
+  <p style="margin-top:1.2em;font-size:.55em;color:#2a1f00">Apresenta: <b>Kauã</b></p>
+</section>
+
+<!-- 29 · O QUE A DEMO PROVA -->
+<section>
+  <span class="who">Kauã</span>
+  <span class="kicker">Antes de mostrar</span>
+  <h2>A demo precisa provar <span class="grad">4 coisas</span></h2>
+  <p style="font-size:.56em;max-width:34em">Em vez de apenas navegar por telas, a demonstração vai responder o que realmente importa para o projeto.</p>
+  <div class="grid g2" style="margin-top:.4em">
+    <div class="card anim"><span class="ic">🔌</span><h3>Integração</h3><p>Os dados dos grupos entram no app como JSON/CSV e aparecem com sentido.</p></div>
+    <div class="card anim"><span class="ic">👤</span><h3>Perfil correto</h3><p>Morador, síndico e DAAE não enxergam a mesma coisa.</p></div>
+    <div class="card anim"><span class="ic">🔔</span><h3>Alerta útil</h3><p>Cada notificação tem origem, severidade e destinatário.</p></div>
+    <div class="card anim"><span class="ic">📱</span><h3>Entrega real</h3><p>Funciona como web, APK Android e PWA no iPhone.</p></div>
+  </div>
+  <div class="goal anim" style="margin-top:.65em">Frase para falar: “a demo não é só visual; ela comprova que o fluxo completo funciona.”</div>
+</section>
+
+<!-- 30b · ROTEIRO DA DEMO -->
+<section>
+  <span class="who">Kauã</span>
+  <span class="kicker">Ordem da demonstração</span>
+  <h2>Mostramos primeiro o <span class="grad">usuário</span>, depois a operação</h2>
+  <div class="steps" style="margin-top:.5em">
+    <div class="step card anim"><div class="sn">1</div><h3 style="font-size:.62em">Morador</h3><p>Consumo do apartamento, conta e alerta pessoal.</p></div>
+    <div class="step card anim"><div class="sn">2</div><h3 style="font-size:.62em">Síndico</h3><p>Condomínio, reservatórios, bomba submersa e contas comuns.</p></div>
+    <div class="step card anim"><div class="sn">3</div><h3 style="font-size:.62em">DAAE</h3><p>Setores da cidade, pressão, vazão, perdas e alertas operacionais.</p></div>
+    <div class="step card anim"><div class="sn">4</div><h3 style="font-size:.62em">Instalação</h3><p>APK Android ou PWA no iPhone.</p></div>
+  </div>
+  <div class="goal anim" style="margin-top:.75em">Frase para falar: “a ordem da demo mostra justamente a separação de responsabilidades: morador cuida do próprio consumo, síndico do condomínio e DAAE da cidade.”</div>
+</section>
+
+<!-- 31 · DEMO -->
+<section data-background-gradient="linear-gradient(160deg,#020325,#062a52)">
+  <span class="who">Kauã</span>
+  <div class="center">
+    <span class="kicker">Hora da verdade</span>
+    <h1 style="font-size:3em">Demonstração <span class="grad">ao vivo</span></h1>
+  </div>
+  <div style="max-width:24em;margin:.6em auto 0">
+    <ul class="blist">
+      <li class="anim">Login como <b>Morador</b> — consumo em tempo real</li>
+      <li class="anim">Trocar para <b>Síndico</b> — visão geral do condomínio</li>
+      <li class="anim">Painel <b>Operador DAAE</b> — alertas da rede</li>
+      <li class="anim">Receber notificação de <b>consumo crítico</b></li>
+      <li class="anim">Instalar o app como <b>PWA</b> no celular</li>
+    </ul>
+  </div>
+</section>
+
+<!-- 32 · OBRIGADO -->
+<section data-auto-animate data-background-gradient="linear-gradient(160deg,#020325,#04113f)">
+  <div class="center">
+    <div class="hero-badge" style="margin:0 auto .3em">💧</div>
+    <h1 data-id="title" style="font-size:3em"><span class="grad2">Obrigado!</span></h1>
+    <p style="font-size:.7em;color:var(--ciano)">SmartWater App — Grupo 6</p>
+    <hr class="sep" style="max-width:18em;margin:.6em auto">
+    <div class="grid g4" style="grid-template-columns:repeat(5,1fr);max-width:34em;margin:.4em auto;gap:12px">
+      <div class="card" style="padding:.5em"><h3 style="font-size:.6em">Kauã</h3><p style="font-size:.4em">Integração</p></div>
+      <div class="card" style="padding:.5em"><h3 style="font-size:.6em">Bianca</h3><p style="font-size:.4em">Banco</p></div>
+      <div class="card" style="padding:.5em"><h3 style="font-size:.6em">Mariana</h3><p style="font-size:.4em">Front</p></div>
+      <div class="card" style="padding:.5em"><h3 style="font-size:.6em">Jeferson</h3><p style="font-size:.4em">Front</p></div>
+      <div class="card" style="padding:.5em"><h3 style="font-size:.6em">Daniel</h3><p style="font-size:.4em">Back</p></div>
+    </div>
+    <p class="grad" style="font-size:.66em;font-style:italic;margin-top:.6em">"Água inteligente para cidades mais justas."</p>
+    <p class="muted" style="font-size:.4em;margin-top:.6em">Prof. Alexandre Coan Pierri · Fenômenos de Transporte I · UNIARA · 2026</p>
+  </div>
+</section>
+
+</div></div>
+
+<script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/plugin/highlight/highlight.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/plugin/notes/notes.js"></script>
+<script>
+const deck = new Reveal({
+  width:1280, height:720, margin:.055, hash:true, transition:'slide', transitionSpeed:'default',
+  backgroundTransition:'fade', controls:true, progress:true, slideNumber:false, center:true,
+  plugins:[ RevealHighlight, RevealNotes ]
+});
+deck.initialize();
+
+/* ---- Retrospectiva HUD ---- */
+const hud=document.getElementById('hud'), fill=document.getElementById('hudfill'),
+      dots=[...document.querySelectorAll('#hudrow .dot')], hudtxt=document.getElementById('hudtxt'),
+      NAMES={1:'Pressão',2:'Vazão',3:'Hardware',4:'IoT',5:'Dashboard'};
+function updateHUD(){
+  const cur=deck.getCurrentSlide(); const r=cur && cur.dataset.retro ? +cur.dataset.retro : 0;
+  if(r){ hud.classList.add('show'); fill.style.width=(r/5*100)+'%';
+    dots.forEach(d=> d.classList.toggle('on', +d.dataset.i<=r));
+    hudtxt.textContent=`${r}/5 · ${NAMES[r]}`;
+  } else { hud.classList.remove('show'); }
+}
+deck.on('ready',updateHUD); deck.on('slidechanged',updateHUD);
+
+/* ---- count-up ---- */
+function runCounters(slide){
+  slide.querySelectorAll('[data-count]').forEach(el=>{
+    if(el.dataset.done) return; el.dataset.done='1';
+    const end=parseFloat(el.dataset.count), suf=el.dataset.suffix||'', dec=(end%1!==0)?1:0;
+    let t0=null; const dur=1100;
+    const step=ts=>{ if(!t0)t0=ts; const p=Math.min((ts-t0)/dur,1);
+      const v=(end*(1-Math.pow(1-p,3))).toFixed(dec);
+      el.textContent=String(v).replace('.',',')+suf; if(p<1)requestAnimationFrame(step); };
+    requestAnimationFrame(step);
+  });
+}
+deck.on('ready',e=>runCounters(e.currentSlide));
+deck.on('slidechanged',e=>runCounters(e.currentSlide));
+
+/* ---- entrada automática e escalonada do conteúdo (sem precisar clicar) ---- */
+function animateIn(slide){
+  if(!slide) return;
+  const els=slide.querySelectorAll('.anim, .pieces .piece');
+  els.forEach((el,i)=>{
+    const isPiece=el.classList.contains('piece');
+    el.style.animation='none'; void el.offsetWidth;      // força reflow p/ re-disparar
+    el.style.animation=`${isPiece?'inPiece':'inUp'} .55s both`;
+    el.style.animationDelay=Math.min(i*0.07,1.0)+'s';
+  });
+}
+deck.on('ready',e=>animateIn(e.currentSlide));
+deck.on('slidechanged',e=>animateIn(e.currentSlide));
+</script>
+</body>
+</html>
