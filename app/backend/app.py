@@ -78,6 +78,11 @@ def serve_splash_cond():
 def serve_daae():
     return send_from_directory(FRONTEND_DIR, 'daae.html')
 
+@app.route('/apresentacao/')
+@app.route('/apresentacao')
+def serve_apresentacao():
+    return send_from_directory(os.path.join(FRONTEND_DIR, 'apresentacao'), 'index.html')
+
 # cidade.html mantido localmente para referência, mas não exposto na web
 
 # Catch-all: serve static assets (css, js, fonts, images)
