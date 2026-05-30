@@ -58,6 +58,11 @@ app.register_blueprint(integracao_bp,     url_prefix='/api/integracao')
 def serve_splash():
     return send_from_directory(FRONTEND_DIR, 'index.html')
 
+@app.route('/acesso')
+@app.route('/acesso.html')
+def serve_acesso():
+    return send_from_directory(FRONTEND_DIR, 'acesso.html')
+
 @app.route('/login.html')
 def serve_login():
     return send_from_directory(FRONTEND_DIR, 'login.html')

@@ -1,0 +1,19 @@
+{
+  "name": "SmartWater",
+  "short_name": "SmartWater",
+  "description": "App de alertas, consumo e contas da plataforma SmartWater.",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#e8f5fb",
+  "theme_color": "#0077B6",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "./icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
