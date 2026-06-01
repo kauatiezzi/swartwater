@@ -16,6 +16,21 @@ def _status_balanco(pct):
     return 'vazamento'
 
 
+def _media_vazao_recente(conn, zona_id, tipo):
+    row = conn.execute(
+        """SELECT AVG(vazao_ls) AS media
+           FROM (
+             SELECT vazao_ls
+             FROM medicoes_vazao_rede
+             WHERE zona_id=? AND tipo=?
+             ORDER BY data_hora DESC
+             LIMIT 12
+           )""",
+        (zona_id, tipo)
+    ).fetchone()
+    return row['media'] or 0
+
+
 @rede_bp.route('/zonas', methods=['GET'])
 @jwt_required
 def zonas():
@@ -30,19 +45,8 @@ def zonas():
             ).fetchone()
             pressao = p_row['pressao_mmh2o'] if p_row else 25000
 
-            e_row = conn.execute(
-                "SELECT AVG(vazao_ls) as avg FROM medicoes_vazao_rede "
-                "WHERE zona_id=? AND tipo='entrada' AND data_hora > datetime('now','-1 hour')",
-                (z['id'],)
-            ).fetchone()
-            s_row = conn.execute(
-                "SELECT AVG(vazao_ls) as avg FROM medicoes_vazao_rede "
-                "WHERE zona_id=? AND tipo='saida' AND data_hora > datetime('now','-1 hour')",
-                (z['id'],)
-            ).fetchone()
-
-            entrada = e_row['avg'] or 0
-            saida   = s_row['avg'] or 0
+            entrada = _media_vazao_recente(conn, z['id'], 'entrada')
+            saida   = _media_vazao_recente(conn, z['id'], 'saida')
             pct     = _pct_perda(entrada, saida)
 
             result.append({
@@ -68,16 +72,8 @@ def balanco():
         total_entrada = total_saida = 0
         detalhes = []
         for z in zonas:
-            e = conn.execute(
-                "SELECT COALESCE(SUM(vazao_ls),0) as tot FROM medicoes_vazao_rede "
-                "WHERE zona_id=? AND tipo='entrada' AND data_hora > datetime('now','-24 hours')",
-                (z['id'],)
-            ).fetchone()['tot']
-            s = conn.execute(
-                "SELECT COALESCE(SUM(vazao_ls),0) as tot FROM medicoes_vazao_rede "
-                "WHERE zona_id=? AND tipo='saida' AND data_hora > datetime('now','-24 hours')",
-                (z['id'],)
-            ).fetchone()['tot']
+            e = _media_vazao_recente(conn, z['id'], 'entrada')
+            s = _media_vazao_recente(conn, z['id'], 'saida')
             total_entrada += e
             total_saida   += s
             pct = _pct_perda(e, s)
@@ -88,7 +84,7 @@ def balanco():
             })
 
         perda_total = _pct_perda(total_entrada, total_saida)
-        perda_vol_l = round((total_entrada - total_saida) * 1000, 0)
+        perda_vol_l = round((total_entrada - total_saida) * 3600, 0)
 
         return jsonify({
             'total_entrada_ls': round(total_entrada, 2),

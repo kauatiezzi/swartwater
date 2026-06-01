@@ -47,6 +47,21 @@ def _status_balanco(pct):
     return 'vazamento'
 
 
+def _media_vazao_recente(conn, zona_id, tipo):
+    row = conn.execute(
+        """SELECT AVG(vazao_ls) AS media
+           FROM (
+             SELECT vazao_ls
+             FROM medicoes_vazao_rede
+             WHERE zona_id=? AND tipo=?
+             ORDER BY data_hora DESC
+             LIMIT 12
+           )""",
+        (zona_id, tipo)
+    ).fetchone()
+    return row['media'] or 0
+
+
 @cidade_bp.route('/dashboard', methods=['GET'])
 @operador_daae
 def dashboard():
@@ -65,18 +80,8 @@ def dashboard():
             pressao = p_row['pressao_mmh2o'] if p_row else 25000
             status_p = _status_pressao(pressao)
 
-            e_row = conn.execute(
-                "SELECT AVG(vazao_ls) as avg FROM medicoes_vazao_rede "
-                "WHERE zona_id=? AND tipo='entrada' AND data_hora > datetime('now','-1 hour')",
-                (z['id'],)
-            ).fetchone()
-            s_row = conn.execute(
-                "SELECT AVG(vazao_ls) as avg FROM medicoes_vazao_rede "
-                "WHERE zona_id=? AND tipo='saida' AND data_hora > datetime('now','-1 hour')",
-                (z['id'],)
-            ).fetchone()
-            entrada = e_row['avg'] or 0
-            saida   = s_row['avg'] or 0
+            entrada = _media_vazao_recente(conn, z['id'], 'entrada')
+            saida   = _media_vazao_recente(conn, z['id'], 'saida')
             pct_p   = _pct_perda(entrada, saida)
             status_b = _status_balanco(pct_p)
 
@@ -162,14 +167,8 @@ def alertas():
                 })
 
             # Balanço hídrico
-            e = conn.execute(
-                "SELECT AVG(vazao_ls) as a FROM medicoes_vazao_rede WHERE zona_id=? AND tipo='entrada' AND data_hora > datetime('now','-1 hour')",
-                (z['id'],)
-            ).fetchone()['a'] or 0
-            s = conn.execute(
-                "SELECT AVG(vazao_ls) as a FROM medicoes_vazao_rede WHERE zona_id=? AND tipo='saida' AND data_hora > datetime('now','-1 hour')",
-                (z['id'],)
-            ).fetchone()['a'] or 0
+            e = _media_vazao_recente(conn, z['id'], 'entrada')
+            s = _media_vazao_recente(conn, z['id'], 'saida')
             pct = _pct_perda(e, s)
             if pct > 10:
                 alertas.append({
