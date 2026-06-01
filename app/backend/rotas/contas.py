@@ -23,6 +23,18 @@ def _condominio_sindico(conn):
     return row['condominio'] if row else ''
 
 
+def _mes_referencia_condominio(conn, condominio, mes=None):
+    if mes:
+        return mes
+    row = conn.execute(
+        """SELECT MAX(c.mes_ref) AS mes
+           FROM contas c JOIN usuarios u ON u.id=c.usuario_id
+           WHERE u.perfil='morador' AND u.condominio=?""",
+        (condominio,)
+    ).fetchone()
+    return row['mes'] if row and row['mes'] else datetime.date.today().strftime('%Y-%m')
+
+
 @contas_bp.route('/minhas', methods=['GET'])
 @jwt_required
 def minhas_contas():
@@ -50,34 +62,38 @@ def resumo_sindico():
     conn = get_db()
     try:
         condominio = _condominio_sindico(conn)
+        mes_ref = _mes_referencia_condominio(conn, condominio, request.args.get('mes'))
         total_usuarios = conn.execute(
             "SELECT COUNT(*) FROM usuarios WHERE perfil='morador' AND condominio=?",
             (condominio,)
         ).fetchone()[0]
-        mes_atual = datetime.date.today().strftime('%Y-%m')
 
         pendentes = conn.execute(
             """SELECT COUNT(*) FROM contas c JOIN usuarios u ON u.id=c.usuario_id
-               WHERE c.mes_ref=? AND c.status='pendente' AND u.condominio=?""",
-            (mes_atual, condominio)
+               WHERE c.mes_ref=? AND c.status='pendente'
+                 AND u.perfil='morador' AND u.condominio=?""",
+            (mes_ref, condominio)
         ).fetchone()[0]
         atrasados = conn.execute(
             """SELECT COUNT(*) FROM contas c JOIN usuarios u ON u.id=c.usuario_id
-               WHERE c.status='atrasado' AND u.condominio=?""",
-            (condominio,)
+               WHERE c.mes_ref=? AND c.status='atrasado'
+                 AND u.perfil='morador' AND u.condominio=?""",
+            (mes_ref, condominio)
         ).fetchone()[0]
         valor_pendente = conn.execute(
             """SELECT COALESCE(SUM(c.valor_rs),0) FROM contas c JOIN usuarios u ON u.id=c.usuario_id
-               WHERE c.status IN ('pendente','atrasado') AND u.condominio=?""",
-            (condominio,)
+               WHERE c.mes_ref=? AND c.status IN ('pendente','atrasado')
+                 AND u.perfil='morador' AND u.condominio=?""",
+            (mes_ref, condominio)
         ).fetchone()[0]
         consumo_total = conn.execute(
             """SELECT COALESCE(SUM(c.consumo_l),0) FROM contas c JOIN usuarios u ON u.id=c.usuario_id
-               WHERE c.mes_ref=? AND u.condominio=?""",
-            (mes_atual, condominio)
+               WHERE c.mes_ref=? AND u.perfil='morador' AND u.condominio=?""",
+            (mes_ref, condominio)
         ).fetchone()[0]
 
         return jsonify({
+            'mes_ref': mes_ref,
             'total_moradores': total_usuarios,
             'contas_pendentes': pendentes,
             'contas_atrasadas': atrasados,
@@ -94,8 +110,8 @@ def resumo_sindico():
 def todas_contas():
     conn = get_db()
     try:
-        mes = request.args.get('mes', datetime.date.today().strftime('%Y-%m'))
         condominio = _condominio_sindico(conn)
+        mes = _mes_referencia_condominio(conn, condominio, request.args.get('mes'))
         rows = conn.execute(
             """SELECT c.*, u.nome, u.apto, u.bloco, u.condominio
                FROM contas c JOIN usuarios u ON c.usuario_id = u.id
@@ -110,11 +126,13 @@ def todas_contas():
             (condominio,)
         ).fetchall()
         ids_com_conta = {r['usuario_id'] for r in rows}
+        gerou_conta = False
         for u in usuarios:
             if u['id'] not in ids_com_conta:
                 seed_contas(u['id'], u['nome'])
+                gerou_conta = True
 
-        if not rows:
+        if gerou_conta or not rows:
             rows = conn.execute(
                 """SELECT c.*, u.nome, u.apto, u.bloco, u.condominio
                    FROM contas c JOIN usuarios u ON c.usuario_id = u.id
@@ -204,8 +222,8 @@ def notificar_morador():
 def consumo_moradores():
     conn = get_db()
     try:
-        mes = request.args.get('mes', datetime.date.today().strftime('%Y-%m'))
         condominio = _condominio_sindico(conn)
+        mes = _mes_referencia_condominio(conn, condominio, request.args.get('mes'))
         rows = conn.execute(
             """SELECT u.id, u.nome, u.apto, u.bloco,
                       c.consumo_l, c.consumo_m3, c.valor_rs, c.status
@@ -234,6 +252,6 @@ def consumo_moradores():
                 'status': r['status'] or 'sem_conta',
                 'vs_media_pct': round((cl - media) / media * 100, 1) if media else 0,
             })
-        return jsonify({'moradores': result, 'media_l': round(media, 0)}), 200
+        return jsonify({'mes_ref': mes, 'moradores': result, 'media_l': round(media, 0)}), 200
     finally:
         conn.close()
