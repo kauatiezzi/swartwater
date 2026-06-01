@@ -939,13 +939,14 @@ async function _renderSindVisaoGeral() {
   const cont = document.getElementById('tab-sindico');
   if (!cont) return;
   const res = await apiFetch('/contas/resumo-sindico') || { total_moradores:0, contas_pendentes:0, contas_atrasadas:0, valor_a_receber:0, consumo_total_l:0 };
+  const contasAbertas = (res.contas_pendentes || 0) + (res.contas_atrasadas || 0);
 
   cont.innerHTML = `<div style="padding-top:6px">
     ${_sindNavHtml()}
     <div class="kpi-grid animate-in">
       <div class="kpi-card"><div class="kpi-label">Moradores</div><div class="kpi-value">${res.total_moradores}</div><div class="kpi-sub">unidades ativas</div></div>
       <div class="kpi-card"><div class="kpi-label">Consumo do mês</div><div class="kpi-value">${fmtLn(res.consumo_total_l)}</div><div class="kpi-sub">litros</div></div>
-      <div class="kpi-card"><div class="kpi-label">Contas pendentes</div><div class="kpi-value ${res.contas_atrasadas>0?'warn':''}">${res.contas_pendentes}</div><div class="kpi-sub">${res.contas_atrasadas} atrasadas</div></div>
+      <div class="kpi-card"><div class="kpi-label">Contas em aberto</div><div class="kpi-value ${res.contas_atrasadas>0?'warn':''}">${contasAbertas}</div><div class="kpi-sub">${res.contas_pendentes || 0} pendentes - ${res.contas_atrasadas || 0} atrasadas</div></div>
       <div class="kpi-card"><div class="kpi-label">Valor a receber</div><div class="kpi-value ok">${fmtBRL(res.valor_a_receber)}</div><div class="kpi-sub">condominio</div></div>
     </div>
     <div class="kpi-card animate-in" style="margin-bottom:14px;padding:16px">
@@ -1008,8 +1009,7 @@ async function _renderSindContas() {
   if (!cont) return;
   cont.innerHTML = `<div style="padding-top:6px">${_sindNavHtml()}<div class="loading-shimmer" style="height:300px;border-radius:16px"></div></div>`;
 
-  const mes = new Date().toISOString().slice(0,7);
-  const contas = await apiFetch(`/contas/todos?mes=${mes}`) || [];
+  const contas = await apiFetch('/contas/todos') || [];
 
   const status_label = { pago:'Pago', pendente:'Pendente', atrasado:'Atrasado', sem_conta:'Sem conta' };
   const items = contas.map(c => `
@@ -1328,6 +1328,7 @@ async function renderDashboardSindico() {
     apiFetch('/contas/consumo-moradores'),
   ]);
   const resumo = res || { total_moradores:0, contas_pendentes:0, contas_atrasadas:0, valor_a_receber:0, consumo_total_l:0 };
+  const contasAbertas = (resumo.contas_pendentes || 0) + (resumo.contas_atrasadas || 0);
   const moradores = consumo?.moradores || [];
   const maiores = moradores.slice(0, 4).map(m => `
     <div class="conta-item animate-in">
@@ -1348,7 +1349,7 @@ async function renderDashboardSindico() {
       <div class="kpi-grid animate-in" style="margin-top:14px">
         <div class="kpi-card"><div class="kpi-label">Moradores</div><div class="kpi-value">${resumo.total_moradores}</div><div class="kpi-sub">unidades ativas</div></div>
         <div class="kpi-card"><div class="kpi-label">Consumo do mês</div><div class="kpi-value">${fmtLn(resumo.consumo_total_l)}</div><div class="kpi-sub">litros do condomínio</div></div>
-        <div class="kpi-card"><div class="kpi-label">Contas pendentes</div><div class="kpi-value ${resumo.contas_atrasadas>0?'warn':''}">${resumo.contas_pendentes}</div><div class="kpi-sub">${resumo.contas_atrasadas} atrasadas</div></div>
+        <div class="kpi-card"><div class="kpi-label">Contas em aberto</div><div class="kpi-value ${resumo.contas_atrasadas>0?'warn':''}">${contasAbertas}</div><div class="kpi-sub">${resumo.contas_pendentes || 0} pendentes - ${resumo.contas_atrasadas || 0} atrasadas</div></div>
         <div class="kpi-card"><div class="kpi-label">A receber</div><div class="kpi-value ok">${fmtBRL(resumo.valor_a_receber)}</div><div class="kpi-sub">pendentes + atrasadas</div></div>
       </div>
 
